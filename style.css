@@ -64,7 +64,8 @@ nav .navlinks a:hover{ color: var(--ink); }
   overflow:hidden;
   white-space:nowrap;
 }
-.status-strip .track{ display:flex; animation: scroll 22s linear infinite; }
+.status-strip .track{ display:flex; }
+.marquee-set{ display:flex; flex-shrink:0; }
 .status-strip .item{
   font-family:'IBM Plex Mono', monospace;
   font-size:11.5px;

@@ -143,6 +143,56 @@
     if (e.key === "Escape") closeRadialMenu();
   });
 
+  // ---------- MARQUEE: ekrana göre otomatik çoğaltan sonsuz şerit ----------
+  function setupMarquee() {
+    const strip = document.querySelector(".status-strip");
+    const track = document.getElementById("marqueeTrack");
+    const master = document.getElementById("marqueeMaster");
+    if (!strip || !track || !master) return;
+
+    // Önceki çoğaltmaları temizle, sadece orijinal seti bırak
+    Array.from(track.children).forEach((child) => {
+      if (child !== master) child.remove();
+    });
+
+    // En az bir kopya daha ekle (çift sayıda set şart - seamless döngü için)
+    track.appendChild(master.cloneNode(true));
+
+    let guard = 0;
+    while (track.scrollWidth < strip.clientWidth * 2 && guard < 10) {
+      track.appendChild(master.cloneNode(true));
+      track.appendChild(master.cloneNode(true));
+      guard++;
+    }
+
+    const speedPxPerSec = 70; // sabit kayma hızı
+    const distance = track.scrollWidth / 2; // -50% kaydırma mesafesi
+    const duration = Math.max(distance / speedPxPerSec, 10);
+    track.style.animation = `scroll ${duration}s linear infinite`;
+  }
+
+  let marqueeResizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(marqueeResizeTimer);
+    marqueeResizeTimer = setTimeout(setupMarquee, 200);
+  });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(setupMarquee);
+  }
+
+  // ---------- CV: aktif dile göre doğru dosyayı indir ----------
+  function updateCVLink() {
+    const cvBtn = document.getElementById("cvDownload");
+    if (!cvBtn) return;
+    if (currentLang === "tr") {
+      cvBtn.setAttribute("href", "assets/cv-tr.pdf");
+      cvBtn.setAttribute("download", "SACITALPDALMIS_CV_P.pdf");
+    } else {
+      cvBtn.setAttribute("href", "assets/cv-en.pdf");
+      cvBtn.setAttribute("download", "SACITALPDALMIS_CV_EN.pdf");
+    }
+  }
+
   // ---------- LANGUAGE TOGGLE ----------
   function applyLanguage() {
     document.documentElement.dataset.lang = currentLang;
@@ -159,6 +209,8 @@
 
     renderKPIs();
     renderProjects();
+    updateCVLink();
+    setupMarquee();
   }
 
   langBtn.addEventListener("click", () => {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mustafa Ertürk — Portföy</title>
+<title>Sacit Alp Dalmış — Portföy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Serif+4:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -21,21 +21,16 @@
 </nav>
 
 <div class="status-strip">
-  <div class="track">
-    <div class="item"><span class="dot"></span><span data-i18n="s_design">TASARIM</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_software">YAZILIM</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_analyze">ANALİZ</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_test">TEST</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_production">ÜRETİM</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_data_analysis">VERİ ANALİZİ</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_plan">ÜRETİM PROGRAMI</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_design">TASARIM</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_software">YAZILIM</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_analyze">ANALİZ</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_test">TEST</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_production">ÜRETİM</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_data_analysis">VERİ ANALİZİ</span></div>
-    <div class="item"><span class="dot"></span><span data-i18n="s_plan">ÜRETİM PROGRAMI</span></div>
+  <div class="track" id="marqueeTrack">
+    <div class="marquee-set" id="marqueeMaster">
+      <div class="item"><span class="dot"></span><span data-i18n="s_design">TASARIM</span></div>
+      <div class="item"><span class="dot"></span><span data-i18n="s_software">YAZILIM</span></div>
+      <div class="item"><span class="dot"></span><span data-i18n="s_analyze">ANALİZ</span></div>
+      <div class="item"><span class="dot"></span><span data-i18n="s_test">TEST</span></div>
+      <div class="item"><span class="dot"></span><span data-i18n="s_production">ÜRETİM</span></div>
+      <div class="item"><span class="dot"></span><span data-i18n="s_data_analysis">VERİ ANALİZİ</span></div>
+      <div class="item"><span class="dot"></span><span data-i18n="s_plan">ÜRETİM PROGRAMI</span></div>
+    </div>
   </div>
 </div>
 
@@ -78,11 +73,11 @@
 <section id="cv" class="cv-section">
   <h2 data-i18n="cv_title">Özgeçmiş</h2>
   <p data-i18n="cv_text">Güncel CV'mi PDF olarak indirebilirsiniz.</p>
-  <a href="assets/cv.pdf" class="btn" download data-i18n="cta_cv">CV İNDİR</a>
+  <a href="assets/cv-tr.pdf" id="cvDownload" class="btn" download="Sacit_Alp_Dalmis_CV_TR.pdf" data-i18n="cta_cv">CV İNDİR</a>
 </section>
 
 <footer>
-  <span data-i18n="footer">© 2026 Mustafa Ertürk — Üretim Mühendisliği Portföyü</span>
+  <span data-i18n="footer">© 2026 Sacit Alp Dalmış — Üretim Mühendisliği Portföyü</span>
 </footer>
 
 <script src="data/projects.js"></script>
