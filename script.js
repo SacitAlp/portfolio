@@ -185,10 +185,10 @@
     const cvBtn = document.getElementById("cvDownload");
     if (!cvBtn) return;
     if (currentLang === "tr") {
-      cvBtn.setAttribute("href", "assets/cv-tr.pdf");
+      cvBtn.setAttribute("href", "assets/SACITALPDALMIS_CV_P.pdf");
       cvBtn.setAttribute("download", "SACITALPDALMIS_CV_P.pdf");
     } else {
-      cvBtn.setAttribute("href", "assets/cv-en.pdf");
+      cvBtn.setAttribute("href", "assets/SACITALPDALMIS_CV_EN.pdf");
       cvBtn.setAttribute("download", "SACITALPDALMIS_CV_EN.pdf");
     }
   }
