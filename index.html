@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr" data-lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mustafa Ertürk — Portföy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Serif+4:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="logo">M.ERTÜRK<span>_</span>PORTFOLIO</div>
+  <div class="navlinks">
+    <a href="#projeler" data-i18n="nav_projects">PROJELER</a>
+    <a href="#hobi" data-i18n="nav_hobby">HOBİ</a>
+    <a href="#cv" data-i18n="nav_cv">CV</a>
+    <button id="langToggle" class="lang-btn">EN</button>
+  </div>
+</nav>
+
+<div class="status-strip">
+  <div class="track">
+    <div class="item"><span class="dot"></span><span data-i18n="s_design">TASARIM</span></div>
+    <div class="item"><span class="dot"></span><span data-i18n="s_plan">ÜRETİM PROGRAMI</span></div>
+    <div class="item"><span class="dot"></span><span data-i18n="s_line">HAT VERİSİ</span></div>
+    <div class="item"><span class="dot"></span><span data-i18n="s_test">TEST</span></div>
+    <div class="item"><span class="dot"></span><span data-i18n="s_ship">SEVKİYAT</span></div>
+    <div class="item"><span class="dot"></span><span data-i18n="s_design">TASARIM</span></div>
+    <div class="item"><span class="dot"></span><span data-i18n="s_plan">ÜRETİM PROGRAMI</span></div>
+    <div class="item"><span class="dot"></span><span data-i18n="s_line">HAT VERİSİ</span></div>
+    <div class="item"><span class="dot"></span><span data-i18n="s_test">TEST</span></div>
+    <div class="item"><span class="dot"></span><span data-i18n="s_ship">SEVKİYAT</span></div>
+  </div>
+</div>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow" data-i18n="eyebrow">// Hat Durumu: Aktif</div>
+    <h1>
+      <span data-i18n="h1_1">Üretimi</span><br>
+      <span class="accent" data-i18n="h1_2">okunabilir</span><br>
+      <span data-i18n="h1_3">kılıyorum.</span>
+    </h1>
+    <p class="lead" data-i18n="lead">Planlama, ürün ağacı ve hat verisi analizini gerçek üretim ortamından çıkardığım araçlarla anlatıyorum.</p>
+    <div class="ctas">
+      <a href="#projeler" class="btn" data-i18n="cta_projects">PROJELERİ GÖR</a>
+      <a href="#cv" class="btn ghost" data-i18n="cta_cv">CV İNDİR</a>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpiWrap">
+    <!-- KPI kartları JS ile projects verisinden üretilir -->
+  </div>
+</header>
+
+<!-- Radyal menü, JS tarafından tetiklenince buraya konumlandırılır -->
+<div id="radialMenu" class="radial-menu" aria-hidden="true"></div>
+<div id="radialOverlay" class="radial-overlay"></div>
+
+<section id="projeler" class="projects">
+  <h2 data-i18n="projects_title">Öne Çıkan Projeler</h2>
+  <div class="project-grid" id="projectGrid">
+    <!-- Kartlar JS ile üretilir -->
+  </div>
+</section>
+
+<section id="hobi" class="hobby-teaser">
+  <h2 data-i18n="hobby_title">Hobi Projeleri</h2>
+  <p data-i18n="hobby_text">Bu bölüm yakında farklı bir görsel kimlikle burada olacak.</p>
+</section>
+
+<section id="cv" class="cv-section">
+  <h2 data-i18n="cv_title">Özgeçmiş</h2>
+  <p data-i18n="cv_text">Güncel CV'mi PDF olarak indirebilirsiniz.</p>
+  <a href="assets/cv.pdf" class="btn" download data-i18n="cta_cv">CV İNDİR</a>
+</section>
+
+<footer>
+  <span data-i18n="footer">© 2026 Mustafa Ertürk — Üretim Mühendisliği Portföyü</span>
+</footer>
+
+<script src="data/projects.js"></script>
+<script src="data/i18n.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
