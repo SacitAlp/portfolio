@@ -10,6 +10,14 @@
   const radialOverlay = document.getElementById("radialOverlay");
   const langBtn = document.getElementById("langToggle");
 
+  // Araç Seti kutusunun sayısını PROJECTS içindeki stack verisinden otomatik hesapla
+  (function computeToolCount() {
+    const toolHub = KPI_HUBS.find((h) => h.id === "kpi-tools");
+    if (!toolHub) return;
+    const uniqueTools = new Set(PROJECTS.flatMap((p) => p.stack || []));
+    toolHub.num = uniqueTools.size + "+";
+  })();
+
   // ---------- RENDER: KPI CARDS ----------
   function renderKPIs() {
     kpiWrap.innerHTML = "";
@@ -185,10 +193,10 @@
     const cvBtn = document.getElementById("cvDownload");
     if (!cvBtn) return;
     if (currentLang === "tr") {
-      cvBtn.setAttribute("href", "assets/SACITALPDALMIS_CV_P.pdf");
+      cvBtn.setAttribute("href", "assets/cv-tr.pdf");
       cvBtn.setAttribute("download", "SACITALPDALMIS_CV_P.pdf");
     } else {
-      cvBtn.setAttribute("href", "assets/SACITALPDALMIS_CV_EN.pdf");
+      cvBtn.setAttribute("href", "assets/cv-en.pdf");
       cvBtn.setAttribute("download", "SACITALPDALMIS_CV_EN.pdf");
     }
   }

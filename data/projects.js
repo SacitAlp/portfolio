@@ -119,9 +119,9 @@ const KPI_HUBS = [
     items: ["bom-app", "hat-analizi"]
   },
   {
-    id: "kpi-lang",
-    num: "TR/EN",
-    label: { tr: "İki Dilli", en: "Bilingual" },
-    items: []
+    id: "kpi-tools",
+    num: null, // script.js içinde PROJECTS.stack verisinden otomatik hesaplanır
+    label: { tr: "Araç Seti", en: "Tool Set" },
+    items: ["bom-app", "hat-analizi", "uretim-programi", "egitim-takip", "deneme-takip"]
   }
 ];
