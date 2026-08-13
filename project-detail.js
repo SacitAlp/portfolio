@@ -27,7 +27,7 @@
   }
 
   function renderProject(project) {
-    document.title = project.title[currentLang] + " — Mustafa Ertürk";
+    document.title = project.title[currentLang] + " — Sacit Alp Dalmış";
 
     const t = I18N[currentLang];
     const stackChips = project.stack.map((s) => `<span class="chip">${s}</span>`).join("");
