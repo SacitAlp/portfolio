@@ -10,25 +10,25 @@
   const radialOverlay = document.getElementById("radialOverlay");
   const langBtn = document.getElementById("langToggle");
 
-  // Araç Seti kutusunun sayısını PROJECTS içindeki stack verisinden otomatik hesapla
-  (function computeToolCount() {
+  // Programlar kutusunun sayısını SKILLS listesinden otomatik hesapla
+  (function computeSkillCount() {
     const toolHub = KPI_HUBS.find((h) => h.id === "kpi-tools");
     if (!toolHub) return;
-    const uniqueTools = new Set(PROJECTS.flatMap((p) => p.stack || []));
-    toolHub.num = uniqueTools.size + "+";
+    toolHub.num = String(SKILLS.length);
   })();
 
   // ---------- RENDER: KPI CARDS ----------
   function renderKPIs() {
     kpiWrap.innerHTML = "";
     KPI_HUBS.forEach((hub) => {
+      const hasMenu = hub.type === "skills" ? SKILLS.length > 0 : hub.items.length > 0;
       const el = document.createElement("div");
-      el.className = "kpi" + (hub.items.length ? " has-menu" : "");
+      el.className = "kpi" + (hasMenu ? " has-menu" : "");
       el.innerHTML = `
         <div class="num">${hub.num}</div>
         <div class="label">${hub.label[currentLang]}</div>
       `;
-      if (hub.items.length) {
+      if (hasMenu) {
         if (isTouch) {
           el.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -92,16 +92,16 @@
     center.textContent = hub.num;
     radialMenu.appendChild(center);
 
-    const items = hub.items
-      .map((id) => PROJECTS.find((p) => p.id === id))
-      .filter(Boolean);
+    const items = hub.type === "skills"
+      ? SKILLS
+      : hub.items.map((id) => PROJECTS.find((p) => p.id === id)).filter(Boolean);
 
-    const radius = 130;
+    const radius = 130 + Math.max(0, items.length - 5) * 12;
     const count = items.length;
     const startAngle = -90; // yukarıdan başla
     const step = 360 / count;
 
-    items.forEach((proj, i) => {
+    items.forEach((entry, i) => {
       const angle = (startAngle + i * step) * (Math.PI / 180);
       const x = Math.cos(angle) * radius;
       const y = Math.sin(angle) * radius;
@@ -115,20 +115,33 @@
       radialMenu.appendChild(line);
 
       const item = document.createElement("div");
-      item.className = "radial-item";
+      item.className = "radial-item" + (hub.type === "skills" ? " skill-item" : "");
       item.style.setProperty("--tx", x + "px");
       item.style.setProperty("--ty", y + "px");
-      item.innerHTML = `
-        <div class="ri-inner">
-          <div class="ri-tag">${proj.tag[currentLang]}</div>
-          <div class="ri-title">${proj.title[currentLang]}</div>
-        </div>
-      `;
+
+      if (hub.type === "skills") {
+        const filled = "●".repeat(entry.level);
+        const empty = "○".repeat(5 - entry.level);
+        item.innerHTML = `
+          <div class="ri-inner">
+            <div class="ri-title">${entry.name}</div>
+            <div class="ri-dots"><span class="dots-filled">${filled}</span><span class="dots-empty">${empty}</span></div>
+          </div>
+        `;
+      } else {
+        item.innerHTML = `
+          <div class="ri-inner">
+            <div class="ri-tag">${entry.tag[currentLang]}</div>
+            <div class="ri-title">${entry.title[currentLang]}</div>
+          </div>
+        `;
+        item.addEventListener("click", () => {
+          window.location.href = "project.html?id=" + encodeURIComponent(entry.id);
+        });
+      }
+
       item.addEventListener("mouseenter", cancelClose);
       item.addEventListener("mouseleave", scheduleClose);
-      item.addEventListener("click", () => {
-        window.location.href = "project.html?id=" + encodeURIComponent(proj.id);
-      });
       radialMenu.appendChild(item);
     });
 
@@ -193,10 +206,10 @@
     const cvBtn = document.getElementById("cvDownload");
     if (!cvBtn) return;
     if (currentLang === "tr") {
-      cvBtn.setAttribute("href", "assets/cv-tr.pdf");
+      cvBtn.setAttribute("href", "assets/SACITALPDALMIS_CV_P.pdf");
       cvBtn.setAttribute("download", "SACITALPDALMIS_CV_P.pdf");
     } else {
-      cvBtn.setAttribute("href", "assets/cv-en.pdf");
+      cvBtn.setAttribute("href", "assets/SACITALPDALMIS_CV_EN.pdf");
       cvBtn.setAttribute("download", "SACITALPDALMIS_CV_EN.pdf");
     }
   }

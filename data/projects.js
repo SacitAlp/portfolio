@@ -120,8 +120,22 @@ const KPI_HUBS = [
   },
   {
     id: "kpi-tools",
-    num: null, // script.js içinde PROJECTS.stack verisinden otomatik hesaplanır
-    label: { tr: "Araç Seti", en: "Tool Set" },
-    items: ["bom-app", "hat-analizi", "uretim-programi", "egitim-takip", "deneme-takip"]
+    type: "skills",
+    num: null, // script.js içinde SKILLS.length'ten otomatik hesaplanır
+    label: { tr: "Programlar", en: "Software" },
+    items: []
   }
+];
+
+// Kullanılan program/araçlar ve beceri seviyesi (1-5).
+// "kpi-tools" kutusunun radyal menüsü bu diziyi kullanır (projelere değil).
+const SKILLS = [
+  { name: "Siemens NX", level: 4 },
+  { name: "Solidworks", level: 5 },
+  { name: "Teamcenter", level: 4 },
+  { name: "SAP ERP", level: 3 },
+  { name: "Python / Excel VBA / Matlab", level: 5 },
+  { name: "C++", level: 4 },
+  { name: "Arduino IDE", level: 4 },
+  { name: "Tecnomatix / TIA Portal", level: 3 }
 ];
