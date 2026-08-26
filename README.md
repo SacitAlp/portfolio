@@ -25,7 +25,7 @@ site/
 - [ ] Hobi bölümü için ayrı tema/renk seti
 - [ ] GitHub linklerini gerçek repo adresleriyle doldurmak (`projects.js` içindeki `github: "#"`)
 - [ ] Video/GIF alanlarını doldurmak (`projects.js` içindeki `video: null`)
-- [ ] `assets/cv.pdf` dosyasını eklemek
+- [x] `assets/cv.pdf` dosyasını eklemek
 - [ ] Kod indirme için mail/telefon formu (Formspree veya Netlify Forms entegrasyonu)
 - [ ] Gerçek proje görselleri / ekran görüntüleri
 
