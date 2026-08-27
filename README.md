@@ -10,7 +10,8 @@ site/
 │   ├── projects.js   ← Tek veri kaynağı: yeni proje eklemek için buraya obje ekle
 │   └── i18n.js        ← TR/EN metin sözlüğü
 └── assets/
-    └── cv.pdf          ← (henüz yok, CV dosyanı buraya koyman yeterli)
+    ├── SACITALPDALMIS_CV_P.pdf   ← Türkçe CV, burada
+    └── SACITALPDALMIS_CV_EN.pdf  ← İngilizce CV, burada
 ```
 
 ## Neler çalışıyor
@@ -25,7 +26,7 @@ site/
 - [ ] Hobi bölümü için ayrı tema/renk seti
 - [ ] GitHub linklerini gerçek repo adresleriyle doldurmak (`projects.js` içindeki `github: "#"`)
 - [ ] Video/GIF alanlarını doldurmak (`projects.js` içindeki `video: null`)
-- [ ] `assets/cv.pdf` dosyasını eklemek
+- [x] `assets/SACITALPDALMIS_CV_P.pdf` ve `assets/SACITALPDALMIS_CV_EN.pdf` dosyaları eklendi
 - [ ] Kod indirme için mail/telefon formu (Formspree veya Netlify Forms entegrasyonu)
 - [ ] Gerçek proje görselleri / ekran görüntüleri
 
