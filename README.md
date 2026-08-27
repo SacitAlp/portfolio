@@ -19,9 +19,10 @@ site/
   tıklanınca ilgili proje kartına kayarak gidiyor
 - TR/EN dil değişimi (sağ üstteki buton), tüm metinler `data/i18n.js`'den geliyor
 - "Öne Çıkan Projeler" ızgarası, projects.js'i otomatik render ediyor
+- Her proje için `project.html?id=...` ile açılan detay sayfası (`project-detail.js`),
+  ilgili proje verisini ve benzer projeleri otomatik gösteriyor
 
 ## Sırada ne var (henüz yapılmadı)
-- [ ] Her projenin kendi detay sayfası (şu an sadece anasayfada kart + açıklama var)
 - [ ] Hobi bölümü için ayrı tema/renk seti
 - [ ] GitHub linklerini gerçek repo adresleriyle doldurmak (`projects.js` içindeki `github: "#"`)
 - [ ] Video/GIF alanlarını doldurmak (`projects.js` içindeki `video: null`)
