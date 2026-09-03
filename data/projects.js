@@ -167,8 +167,18 @@ const LINES = [
     name: "Muhafaza Otomasyon Hattı",
     company: "Arçelik Kompresör İşletmesi",
     description: {
-      tr: "Muhafaza boru ve terminal kaynağı yapılmaktadır.",
-      en: "Housing pipe and terminal welding is performed on this line."
+      tr: "Muhafaza boruları ve terminal kaynağı yapılmaktadır.",
+      en: "Housing pipes and terminal welding is performed on this line."
+    }
+  },
+  {
+    id: "eksantrik-presler",
+    name: "Eksantrik Presler",
+    company: "Arçelik Kompresör İşletmesi",
+    // ÖRNEK açıklama — gerçek süreç bilgisiyle değiştir
+    description: {
+      tr: "Laminasyon preslerde rotor/stator paketlerinin, diğer eksantrik preslerde muhafazanın üretimi yapılmaktadır.",
+      en: "Rotor/stator stacks are produced in lamination presses, while housings are produced in eccentric presses."
     }
   }
 ];
