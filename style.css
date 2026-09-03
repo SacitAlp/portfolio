@@ -401,6 +401,30 @@ footer{
   margin-bottom: 36px;
 }
 .detail-media video, .detail-media img{ width:100%; display:block; }
+.detail-media-caption{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  color: var(--steel);
+  padding: 10px 14px;
+  border-top: 1px solid var(--panel-border);
+  background: var(--panel);
+}
+
+/* Metin+görsel iç içe anlatı bloğu (sections) */
+.detail-image{
+  margin: 0 0 30px;
+}
+.detail-image img{
+  width: 100%;
+  display: block;
+  border: 1px solid var(--panel-border);
+}
+.detail-image-caption{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel);
+  margin-top: 10px;
+}
 
 .detail-ctas{ display:flex; gap:16px; margin-bottom: 60px; }
 

@@ -14,6 +14,49 @@
     return PROJECTS.find((p) => p.id === id);
   }
 
+  // Video ve/veya statik görsel galerisini (örn. Python ile yapılmış gelişmiş
+  // versiyonun ekran görüntüleri) birlikte render eder. İkisi de yoksa "yakında
+  // eklenecek" gösterir.
+  function buildMediaBlock(project, t) {
+    const blocks = [];
+    if (project.video) {
+      blocks.push(`<div class="detail-media"><video src="${project.video}" controls></video></div>`);
+    }
+    if (project.images && project.images.length) {
+      project.images.forEach((img) => {
+        const caption = img.caption
+          ? `<div class="detail-media-caption">${img.caption[currentLang]}</div>`
+          : "";
+        blocks.push(`<div class="detail-media"><img src="${img.src}" alt="">${caption}</div>`);
+      });
+    }
+    if (!blocks.length) {
+      blocks.push(`<div class="detail-media">${t.detail_soon}</div>`);
+    }
+    return blocks.join("");
+  }
+
+  // Sırayla metin/görsel bloklarını (Medium tarzı anlatı) render eder.
+  // project.sections varsa bunu kullanır, yoksa eski tek-paragraf (long) davranışı.
+  function buildBody(project) {
+    if (project.sections && project.sections.length) {
+      return project.sections.map((sec) => {
+        if (sec.type === "text") {
+          return `<p class="detail-long">${sec.content[currentLang]}</p>`;
+        }
+        if (sec.type === "image") {
+          const cap = sec.caption
+            ? `<div class="detail-image-caption">${sec.caption[currentLang]}</div>`
+            : "";
+          const alt = sec.caption ? sec.caption[currentLang] : "";
+          return `<figure class="detail-image"><img src="${sec.src}" alt="${alt}">${cap}</figure>`;
+        }
+        return "";
+      }).join("");
+    }
+    return `<p class="detail-long">${project.long[currentLang]}</p>`;
+  }
+
   function relatedFor(project) {
     const ids = project.related && project.related.length
       ? project.related
@@ -40,14 +83,13 @@
       ? `<a href="${project.video}" class="btn ghost" target="_blank" rel="noopener">${t.detail_video}</a>`
       : "";
 
-    const mediaBlock = project.video
-      ? `<div class="detail-media"><video src="${project.video}" controls></video></div>`
-      : `<div class="detail-media">${t.detail_soon}</div>`;
+    const mediaBlock = buildMediaBlock(project, t);
+    const bodyHtml = buildBody(project);
 
     detailContent.innerHTML = `
       <div class="detail-tag">${project.tag[currentLang]}</div>
       <h1 class="detail-title">${project.title[currentLang]}</h1>
-      <p class="detail-long">${project.long[currentLang]}</p>
+      ${bodyHtml}
 
       <div class="detail-stack-label">${t.detail_stack}</div>
       <div class="stack-chips">${stackChips}</div>

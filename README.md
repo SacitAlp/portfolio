@@ -49,6 +49,10 @@ Her proje şu alanları taşır:
   hangi birime ait olduğunu gösterir (örn. "Planlama", "Mekanik Üretim"). "Canlı
   Proje" kutusunun radyal menüsünde bu bilgi varsa küçük bir alt satır olarak
   görünür; hat bazlı projelerde bu alan hiç eklenmez.
+- `sections` — opsiyonel. Medium tarzı iç içe metin/görsel anlatı için (`long`
+  yerine kullanılır, varsa öncelikli). Her biri `{type:"text", content:{tr,en}}`
+  ya da `{type:"image", src:"...", caption:{tr,en}}` şeklinde, proje detay
+  sayfasında yazdığın sırayla render edilir.
 - `automation` — `cycleTimeBeforeMin` / `cycleTimeAfterMin` (dakika) ve `manHours`
   (TR/EN metin). **Zaman kazancı yüzdesi bu iki dakika değerinden otomatik hesaplanır**
   (`script.js` içindeki `autoRate()`), elle yüzde girilmez.
