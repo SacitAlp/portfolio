@@ -22,7 +22,8 @@ const PROJECTS = [
     github: "#",
     video: null,
     related: ["hat-analizi", "uretim-programi"],
-    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon"],
+    department: { tr: "Mekanik Üretim", en: "Mechanical Production" },
+    lines: [],
     // ÖRNEK veri — gerçek rakamlarla değiştir
     automation: {
       manHours: { tr: "Aylık ~20 saat", en: "~20 hrs/month" },
@@ -47,7 +48,7 @@ const PROJECTS = [
     github: "#",
     video: null,
     related: ["uretim-programi", "deneme-takip"],
-    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon"],
+    lines: ["alfa-sargi"],
     // ÖRNEK veri — gerçek rakamlarla değiştir
     automation: {
       manHours: { tr: "Aylık ~35 saat", en: "~35 hrs/month" },
@@ -72,7 +73,8 @@ const PROJECTS = [
     github: "#",
     video: null,
     related: ["hat-analizi", "egitim-takip"],
-    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon"],
+    department: { tr: "Planlama", en: "Planning" },
+    lines: [],
     // ÖRNEK veri — gerçek rakamlarla değiştir
     automation: {
       manHours: { tr: "Aylık ~25 saat", en: "~25 hrs/month" },
@@ -97,6 +99,7 @@ const PROJECTS = [
     github: "#",
     video: null,
     related: ["deneme-takip", "uretim-programi"],
+    department: { tr: "Mekanik Üretim", en: "Mechanical Production" },
     lines: [], // belirli bir hatta değil, ekip/eğitim bazlı çalışıyor
     // ÖRNEK veri — gerçek rakamlarla değiştir
     automation: {
@@ -122,13 +125,98 @@ const PROJECTS = [
     github: "#",
     video: null,
     related: ["hat-analizi", "bom-app"],
-    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon"],
+    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon", "eksantrik-presler"],
     // ÖRNEK veri — gerçek rakamlarla değiştir
     automation: {
       manHours: { tr: "Aylık ~15 saat", en: "~15 hrs/month" },
       cycleTimeBeforeMin: 25,
       cycleTimeAfterMin: 6
     }
+  },
+  // ---------------------------------------------------------
+  // Aşağıdaki 4 proje TASLAK — kendi chat'lerinde detaylandırılınca
+  // tag/desc/long/stack/automation alanları güncellenecek.
+  // ---------------------------------------------------------
+  {
+    id: "uretim-plani",
+    category: "is",
+    tag: { tr: "Excel · Planlama", en: "Excel · Planning" },
+    title: { tr: "Mekanik Üretim Planı", en: "Mechanical Production Plan" },
+    desc: {
+      tr: "Tüm hatlardaki stok ve üretim sayılarının plan bazında takip edildiği çalışma.",
+      en: "Tracks stock levels and production counts across all lines against the plan."
+    },
+    long: {
+      tr: "Detaylandırılacak.",
+      en: "To be detailed."
+    },
+    stack: ["Excel", "VBA"],
+    github: "#",
+    video: null,
+    related: ["uretim-programi", "hat-analizi"],
+    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon", "eksantrik-presler"],
+    automation: null // henüz işlenmedi
+  },
+  {
+    id: "ariza-yedek-parca",
+    category: "is",
+    tag: { tr: "Excel · Kalite", en: "Excel · Quality" },
+    title: { tr: "Arıza Kayıt & Yedek Parça Stok", en: "Fault Log & Spare Parts Stock" },
+    desc: {
+      tr: "Hat arızalarının kaydı ve yedek parça stok takibinin yapıldığı sistem.",
+      en: "Logs line faults and tracks spare parts stock."
+    },
+    long: {
+      tr: "Detaylandırılacak.",
+      en: "To be detailed."
+    },
+    stack: ["Excel", "VBA"],
+    github: "#",
+    video: null,
+    related: ["deneme-takip", "uretim-plani"],
+    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon", "eksantrik-presler"],
+    automation: null // henüz işlenmedi
+  },
+  {
+    id: "sap-entegrasyon",
+    category: "is",
+    tag: { tr: "Excel · SAP", en: "Excel · SAP" },
+    title: { tr: "SAP Entegrasyon Araçları", en: "SAP Integration Tools" },
+    desc: {
+      tr: "SAP'tan veri çekme ve ürün ağacı (BOM) eşleştirme için geliştirilen araçlar.",
+      en: "Tools for pulling data from SAP and matching bill-of-materials structures."
+    },
+    long: {
+      tr: "Detaylandırılacak.",
+      en: "To be detailed."
+    },
+    stack: ["Excel", "VBA", "SAP"],
+    github: "#",
+    video: null,
+    related: ["bom-app", "uretim-programi"],
+    department: { tr: "Planlama + Mekanik Üretim", en: "Planning + Mechanical Production" },
+    lines: [],
+    automation: null // henüz işlenmedi
+  },
+  {
+    id: "sargi-vardiya-mesai",
+    category: "is",
+    tag: { tr: "Excel · Planlama", en: "Excel · Planning" },
+    title: { tr: "Sargı Vardiya & Mesai Takibi", en: "Winding Shift & Overtime Tracker" },
+    desc: {
+      tr: "Sargı hatlarındaki vardiya ve mesai planlamasının yapıldığı çalışma.",
+      en: "Manages shift and overtime planning for the winding lines."
+    },
+    long: {
+      tr: "Detaylandırılacak.",
+      en: "To be detailed."
+    },
+    stack: ["Excel", "VBA"],
+    github: "#",
+    video: null,
+    related: ["hat-analizi", "uretim-plani"],
+    lines: ["odawara-sargi", "alfa-sargi"],
+    automation: null // henüz işlenmedi
   }
 ];
 
@@ -167,8 +255,8 @@ const LINES = [
     name: "Muhafaza Otomasyon Hattı",
     company: "Arçelik Kompresör İşletmesi",
     description: {
-      tr: "Muhafaza boruları ve terminal kaynağı yapılmaktadır.",
-      en: "Housing pipes and terminal welding is performed on this line."
+      tr: "Muhafaza boru ve terminal kaynağı yapılmaktadır.",
+      en: "Housing pipe and terminal welding is performed on this line."
     }
   },
   {
@@ -177,8 +265,8 @@ const LINES = [
     company: "Arçelik Kompresör İşletmesi",
     // ÖRNEK açıklama — gerçek süreç bilgisiyle değiştir
     description: {
-      tr: "Laminasyon preslerde rotor/stator paketlerinin, diğer eksantrik preslerde muhafazanın üretimi yapılmaktadır.",
-      en: "Rotor/stator stacks are produced in lamination presses, while housings are produced in eccentric presses."
+      tr: "Eksantrik preslerle sac/metal parçaların zımbalanması ve şekillendirilmesi yapılmaktadır.",
+      en: "Sheet metal stamping and forming is performed using eccentric presses on this line."
     }
   }
 ];
@@ -188,9 +276,9 @@ const LINES = [
 const KPI_HUBS = [
   {
     id: "kpi-live",
-    num: "6+",
+    num: null, // script.js içinde PROJECTS.length'ten otomatik hesaplanır
     label: { tr: "Canlı Proje", en: "Live Projects" },
-    items: ["bom-app", "hat-analizi", "uretim-programi", "egitim-takip", "deneme-takip"]
+    items: [] // script.js içinde PROJECTS'ten otomatik türetilir
   },
   {
     id: "kpi-lines",
@@ -204,7 +292,7 @@ const KPI_HUBS = [
     type: "automation",
     num: null, // script.js içinde projelerin zaman kazancı ortalamasından otomatik hesaplanır
     label: { tr: "Süreç Otomasyonu", en: "Process Automation" },
-    items: ["bom-app", "hat-analizi", "uretim-programi", "egitim-takip", "deneme-takip"]
+    items: [] // script.js içinde "automation" verisi olan projelerden otomatik türetilir
   },
   {
     id: "kpi-tools",

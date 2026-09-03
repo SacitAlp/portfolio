@@ -42,14 +42,22 @@ Her proje şu alanları taşır:
 - `github`, `video` — henüz doldurulmadıysa `"#"` / `null` bırakılır, sayfa buna göre
   "yakında eklenecek" gösterir
 - `related` — proje detay sayfasındaki "İlgili Projeler" için diğer proje id'leri
-- `lines` — bu projenin hangi üretim hat(lar)ında kullanıldığı (`LINES` id referansı)
+- `lines` — bu projenin hangi üretim hat(lar)ında kullanıldığı (`LINES` id referansı).
+  Hatlardan bağımsız bir proje ise (örn. planlama/kadro çalışması) boş dizi (`[]`)
+  bırakılır.
+- `department` — sadece `lines: []` olan (hatlardan bağımsız) projelerde kullanılır,
+  hangi birime ait olduğunu gösterir (örn. "Planlama", "Mekanik Üretim"). "Canlı
+  Proje" kutusunun radyal menüsünde bu bilgi varsa küçük bir alt satır olarak
+  görünür; hat bazlı projelerde bu alan hiç eklenmez.
 - `automation` — `cycleTimeBeforeMin` / `cycleTimeAfterMin` (dakika) ve `manHours`
   (TR/EN metin). **Zaman kazancı yüzdesi bu iki dakika değerinden otomatik hesaplanır**
   (`script.js` içindeki `autoRate()`), elle yüzde girilmez.
 
   ⚠️ Şu anki `cycleTimeBeforeMin`/`cycleTimeAfterMin`/`manHours` değerleri **örnek**
   veridir — gerçek rakamlar eline geçtikçe bu alanları güncelle, yüzdeler otomatik
-  yeniden hesaplanır.
+  yeniden hesaplanır. `automation: null` olan projeler (henüz detaylandırılmamış
+  taslaklar) "Süreç Otomasyonu" kutusunun radyal menüsünde otomatik olarak
+  görünmez, dahil olmaları için gerçek `automation` verisi girilmesi yeterli.
 
 ### `LINES`
 Üretim hatları: `id`, `name`, `company`, `description` (TR/EN). "Üretim Hattı" KPI
@@ -89,15 +97,26 @@ elle sayı girilmesi gerekmiyor.
 - `.gitignore` ile ham/hassas dosyaların (`.xlsm`, `private/` vb.) yanlışlıkla
   repoya girmesini engelleyen güvenlik ağı
 
-## Sırada ne var (henüz yapılmadı)
+## Yol haritası / öncelik sırası
 
-- [ ] Hobi bölümü için ayrı tema/renk seti (şu an anasayfadaki boş bir bölüm)
+**1. Öncelik (şu an aktif):** Mevcut 5 projenin (BOM App, Hat Üretim Veri
+Analizi, Üretim Programı Takibi, Eğitim Takip, Deneme Takip Formu) gerçek
+verilerini temizlemek/anonimleştirmek, doğru hat(lara) bağlamak ve gerçek
+`automation` rakamlarını girmek. Her proje ayrı bir chat'te işleniyor, bu chat
+genel mimari/entegrasyon takibini yapıyor.
+
+**Paralel yürüyen işler (öncelik 1 ile birlikte, aynı temizleme sürecinden çıkacak):**
 - [ ] GitHub linklerini gerçek repo adresleriyle doldurmak (`projects.js` → `github: "#"`)
 - [ ] Video/GIF alanlarını doldurmak (`projects.js` → `video: null`)
-- [ ] Gerçek `automation` rakamlarını (örnek verinin yerine) girmek
-- [ ] Kod indirme için mail/telefon formu (Formspree/Netlify Forms)
 - [ ] Gerçek proje ekran görüntüleri
-- [ ] Domain (`dalmistech.com` vb.) bağlama
+- [ ] Gerçek `automation` rakamlarını (örnek verinin yerine) girmek
+
+**2. Öncelik (projeler yayınlandıktan sonra):**
+- [ ] Kod indirme için mail/telefon formu (Formspree/Netlify Forms)
+- [ ] Domain (`dalmistech.com` vb.) bağlama — bu noktada tekrar değerlendirilecek
+
+**En son (en düşük öncelik):**
+- [ ] Hobi bölümü için ayrı tema/renk seti (şu an anasayfadaki boş bir bölüm)
 
 ## Yeni proje / hat / beceri eklemek
 

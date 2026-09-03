@@ -19,6 +19,14 @@
     return Math.round(((b - a) / b) * 100);
   }
 
+  // Canlı Proje kutusu: tüm PROJECTS'ten otomatik türetilir
+  (function computeLiveProjects() {
+    const liveHub = KPI_HUBS.find((h) => h.id === "kpi-live");
+    if (!liveHub) return;
+    liveHub.items = PROJECTS.map((p) => p.id);
+    liveHub.num = String(PROJECTS.length);
+  })();
+
   // Programlar kutusunun sayısını SKILLS listesinden otomatik hesapla
   (function computeSkillCount() {
     const toolHub = KPI_HUBS.find((h) => h.id === "kpi-tools");
@@ -33,15 +41,14 @@
     lineHub.num = String(LINES.length);
   })();
 
-  // Süreç Otomasyonu kutusunun sayısını projelerin zaman kazancı ortalamasından hesapla
+  // Süreç Otomasyonu kutusu: sadece "automation" verisi girilmiş projelerden
+  // otomatik türetilir (henüz işlenmemiş/taslak projeler otomatik dışarıda kalır)
   (function computeAutomationAvg() {
     const autoHub = KPI_HUBS.find((h) => h.id === "kpi-automation");
     if (!autoHub) return;
-    const rates = autoHub.items
-      .map((id) => PROJECTS.find((p) => p.id === id))
-      .filter(Boolean)
-      .map(autoRate)
-      .filter((r) => r != null);
+    const withAutomation = PROJECTS.filter((p) => p.automation);
+    autoHub.items = withAutomation.map((p) => p.id);
+    const rates = withAutomation.map(autoRate).filter((r) => r != null);
     if (!rates.length) return;
     const avg = Math.round(rates.reduce((sum, r) => sum + r, 0) / rates.length);
     autoHub.num = "%" + avg;
@@ -188,10 +195,14 @@
           window.location.href = "project.html?id=" + encodeURIComponent(entry.id);
         });
       } else {
+        const deptLine = entry.department
+          ? `<div class="ri-metric">${entry.department[currentLang]}</div>`
+          : "";
         item.innerHTML = `
           <div class="ri-inner">
             <div class="ri-tag">${entry.tag[currentLang]}</div>
             <div class="ri-title">${entry.title[currentLang]}</div>
+            ${deptLine}
           </div>
         `;
         item.addEventListener("click", () => {
