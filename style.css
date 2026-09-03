@@ -253,6 +253,13 @@ p.lead{
 }
 .ri-dots .dots-filled{ color: var(--teal); }
 .ri-dots .dots-empty{ color: var(--panel-border); }
+.ri-metric{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:9.5px;
+  color: var(--teal);
+  margin-top:6px;
+  line-height:1.4;
+}
 .radial-line{
   position:absolute;
   height:1px;

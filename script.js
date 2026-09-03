@@ -10,6 +10,15 @@
   const radialOverlay = document.getElementById("radialOverlay");
   const langBtn = document.getElementById("langToggle");
 
+  // Zaman kazancı (%) hesabı: (önce - sonra) / önce * 100
+  function autoRate(p) {
+    if (!p.automation) return null;
+    const b = p.automation.cycleTimeBeforeMin;
+    const a = p.automation.cycleTimeAfterMin;
+    if (b == null || a == null || b <= 0) return null;
+    return Math.round(((b - a) / b) * 100);
+  }
+
   // Programlar kutusunun sayısını SKILLS listesinden otomatik hesapla
   (function computeSkillCount() {
     const toolHub = KPI_HUBS.find((h) => h.id === "kpi-tools");
@@ -17,11 +26,34 @@
     toolHub.num = String(SKILLS.length);
   })();
 
+  // Üretim Hattı kutusunun sayısını LINES listesinden otomatik hesapla
+  (function computeLineCount() {
+    const lineHub = KPI_HUBS.find((h) => h.id === "kpi-lines");
+    if (!lineHub) return;
+    lineHub.num = String(LINES.length);
+  })();
+
+  // Süreç Otomasyonu kutusunun sayısını projelerin zaman kazancı ortalamasından hesapla
+  (function computeAutomationAvg() {
+    const autoHub = KPI_HUBS.find((h) => h.id === "kpi-automation");
+    if (!autoHub) return;
+    const rates = autoHub.items
+      .map((id) => PROJECTS.find((p) => p.id === id))
+      .filter(Boolean)
+      .map(autoRate)
+      .filter((r) => r != null);
+    if (!rates.length) return;
+    const avg = Math.round(rates.reduce((sum, r) => sum + r, 0) / rates.length);
+    autoHub.num = "%" + avg;
+  })();
+
   // ---------- RENDER: KPI CARDS ----------
   function renderKPIs() {
     kpiWrap.innerHTML = "";
     KPI_HUBS.forEach((hub) => {
-      const hasMenu = hub.type === "skills" ? SKILLS.length > 0 : hub.items.length > 0;
+      const hasMenu = hub.type === "skills" ? SKILLS.length > 0
+        : hub.type === "lines" ? LINES.length > 0
+        : hub.items.length > 0;
       const el = document.createElement("div");
       el.className = "kpi" + (hasMenu ? " has-menu" : "");
       el.innerHTML = `
@@ -94,6 +126,8 @@
 
     const items = hub.type === "skills"
       ? SKILLS
+      : hub.type === "lines"
+      ? LINES
       : hub.items.map((id) => PROJECTS.find((p) => p.id === id)).filter(Boolean);
 
     const radius = 130 + Math.max(0, items.length - 5) * 12;
@@ -128,6 +162,31 @@
             <div class="ri-dots"><span class="dots-filled">${filled}</span><span class="dots-empty">${empty}</span></div>
           </div>
         `;
+      } else if (hub.type === "lines") {
+        item.innerHTML = `
+          <div class="ri-inner">
+            <div class="ri-tag">${entry.company}</div>
+            <div class="ri-title">${entry.name}</div>
+          </div>
+        `;
+        item.addEventListener("click", () => {
+          window.location.href = "line.html?id=" + encodeURIComponent(entry.id);
+        });
+      } else if (hub.type === "automation") {
+        const rate = autoRate(entry);
+        const rateLabel = rate != null ? "%" + rate : "—";
+        const manHours = entry.automation && entry.automation.manHours ? entry.automation.manHours[currentLang] : "";
+        const metricLabel = currentLang === "tr" ? "zaman kazancı" : "time saved";
+        item.innerHTML = `
+          <div class="ri-inner">
+            <div class="ri-tag">${entry.tag[currentLang]}</div>
+            <div class="ri-title">${entry.title[currentLang]}</div>
+            <div class="ri-metric">${rateLabel} ${metricLabel}${manHours ? " · " + manHours : ""}</div>
+          </div>
+        `;
+        item.addEventListener("click", () => {
+          window.location.href = "project.html?id=" + encodeURIComponent(entry.id);
+        });
       } else {
         item.innerHTML = `
           <div class="ri-inner">
