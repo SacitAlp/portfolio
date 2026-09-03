@@ -21,7 +21,14 @@ const PROJECTS = [
     stack: ["HTML", "CSS", "JavaScript"],
     github: "#",
     video: null,
-    related: ["hat-analizi", "uretim-programi"]
+    related: ["hat-analizi", "uretim-programi"],
+    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon"],
+    // ÖRNEK veri — gerçek rakamlarla değiştir
+    automation: {
+      manHours: { tr: "Aylık ~20 saat", en: "~20 hrs/month" },
+      cycleTimeBeforeMin: 30,
+      cycleTimeAfterMin: 4
+    }
   },
   {
     id: "hat-analizi",
@@ -39,7 +46,14 @@ const PROJECTS = [
     stack: ["Excel", "LAMBDA/LET", "Pivot"],
     github: "#",
     video: null,
-    related: ["uretim-programi", "deneme-takip"]
+    related: ["uretim-programi", "deneme-takip"],
+    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon"],
+    // ÖRNEK veri — gerçek rakamlarla değiştir
+    automation: {
+      manHours: { tr: "Aylık ~35 saat", en: "~35 hrs/month" },
+      cycleTimeBeforeMin: 60,
+      cycleTimeAfterMin: 8
+    }
   },
   {
     id: "uretim-programi",
@@ -57,7 +71,14 @@ const PROJECTS = [
     stack: ["Excel", "VBA", "Koşullu Biçimlendirme"],
     github: "#",
     video: null,
-    related: ["hat-analizi", "egitim-takip"]
+    related: ["hat-analizi", "egitim-takip"],
+    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon"],
+    // ÖRNEK veri — gerçek rakamlarla değiştir
+    automation: {
+      manHours: { tr: "Aylık ~25 saat", en: "~25 hrs/month" },
+      cycleTimeBeforeMin: 40,
+      cycleTimeAfterMin: 10
+    }
   },
   {
     id: "egitim-takip",
@@ -75,7 +96,14 @@ const PROJECTS = [
     stack: ["Excel", "Koşullu Biçimlendirme"],
     github: "#",
     video: null,
-    related: ["deneme-takip", "uretim-programi"]
+    related: ["deneme-takip", "uretim-programi"],
+    lines: [], // belirli bir hatta değil, ekip/eğitim bazlı çalışıyor
+    // ÖRNEK veri — gerçek rakamlarla değiştir
+    automation: {
+      manHours: { tr: "Aylık ~10 saat", en: "~10 hrs/month" },
+      cycleTimeBeforeMin: 20,
+      cycleTimeAfterMin: 5
+    }
   },
   {
     id: "deneme-takip",
@@ -93,12 +121,60 @@ const PROJECTS = [
     stack: ["Excel", "Form Tasarımı"],
     github: "#",
     video: null,
-    related: ["hat-analizi", "bom-app"]
+    related: ["hat-analizi", "bom-app"],
+    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon"],
+    // ÖRNEK veri — gerçek rakamlarla değiştir
+    automation: {
+      manHours: { tr: "Aylık ~15 saat", en: "~15 hrs/month" },
+      cycleTimeBeforeMin: 25,
+      cycleTimeAfterMin: 6
+    }
+  }
+];
+
+// Üretim hatları. "kpi-lines" kutusunun radyal menüsü bu diziyi kullanır.
+// Bir projenin hangi hat(lar)da kullanıldığı PROJECTS içindeki "lines" alanından okunur.
+const LINES = [
+  {
+    id: "odawara-sargi",
+    name: "Odawara Sargı Hattı",
+    company: "Arçelik Kompresör İşletmesi",
+    description: {
+      tr: "BLDC motor statorunun Cu/Al tellerle sarımı yapılmaktadır.",
+      en: "Cu/Al wire winding of the BLDC motor stator is performed on this line."
+    }
+  },
+  {
+    id: "alfa-sargi",
+    name: "Alfa Sargı Hattı",
+    company: "Arçelik Kompresör İşletmesi",
+    description: {
+      tr: "BLDC motor statorunun Cu/Al tellerle sarımı yapılmaktadır.",
+      en: "Cu/Al wire winding of the BLDC motor stator is performed on this line."
+    }
+  },
+  {
+    id: "rotor-hatti",
+    name: "Rotor Hattı",
+    company: "Arçelik Kompresör İşletmesi",
+    description: {
+      tr: "BLDC motor rotoru üretimi yapılmaktadır.",
+      en: "BLDC motor rotor production takes place on this line."
+    }
+  },
+  {
+    id: "muhafaza-otomasyon",
+    name: "Muhafaza Otomasyon Hattı",
+    company: "Arçelik Kompresör İşletmesi",
+    description: {
+      tr: "Muhafaza boru ve terminal kaynağı yapılmaktadır.",
+      en: "Housing pipe and terminal welding is performed on this line."
+    }
   }
 ];
 
 // KPI kutuları: her biri (opsiyonel olarak) bir radyal menüye bağlanır.
-// items -> PROJECTS içindeki id'lere referans verir.
+// items -> PROJECTS içindeki id'lere referans verir (skills/lines tipi hariç).
 const KPI_HUBS = [
   {
     id: "kpi-live",
@@ -108,15 +184,17 @@ const KPI_HUBS = [
   },
   {
     id: "kpi-lines",
-    num: "3",
+    type: "lines",
+    num: null, // script.js içinde LINES.length'ten otomatik hesaplanır
     label: { tr: "Üretim Hattı", en: "Production Lines" },
-    items: ["hat-analizi", "uretim-programi", "deneme-takip"]
+    items: []
   },
   {
     id: "kpi-automation",
-    num: "%92",
+    type: "automation",
+    num: null, // script.js içinde projelerin zaman kazancı ortalamasından otomatik hesaplanır
     label: { tr: "Süreç Otomasyonu", en: "Process Automation" },
-    items: ["bom-app", "hat-analizi"]
+    items: ["bom-app", "hat-analizi", "uretim-programi", "egitim-takip", "deneme-takip"]
   },
   {
     id: "kpi-tools",
