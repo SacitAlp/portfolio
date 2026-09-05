@@ -8,28 +8,34 @@ const PROJECTS = [
   {
     id: "bom-app",
     category: "is",
-    tag: { tr: "Web Uygulaması", en: "Web App" },
-    title: { tr: "Ürün Ağacı (BOM) Uygulaması", en: "Bill of Materials App" },
+    tag: { tr: "Web Uygulaması · BOM + Kadro", en: "Web App · BOM + Roster" },
+    title: { tr: "BOM Arama ve Kadro Yönetim Uygulaması", en: "BOM Lookup & Roster Management App" },
     desc: {
-      tr: "Ürün ağacını yönetmek ve görselleştirmek için HTML/JS ile geliştirdiğim bağımsız web uygulaması.",
-      en: "A standalone HTML/JS web app for managing and visualizing bill-of-materials structures."
+      tr: "BM veya Stator koduna göre anlık ürün ağacı arama, ortak parça tespiti ve saha kadrosunu tek ekrandan yönetme.",
+      en: "Instant BOM lookup by assembly or stator code, shared-part detection, and single-screen roster management."
     },
-    long: {
-      tr: "Üretimde kullanılan ürün ağacı (BOM) verisini statik tablolardan çıkarıp, arama/filtreleme ve hiyerarşik görünümle kullanılabilir bir web arayüzüne taşıdığım proje. Amaç, saha ekibinin bir parçanın hangi üst montaja ait olduğunu saniyeler içinde bulabilmesiydi.",
-      en: "Moved bill-of-materials data out of static tables into a usable web interface with search, filtering, and a hierarchical view. The goal was letting the floor team find which parent assembly a part belongs to in seconds."
-    },
-    stack: ["HTML", "CSS", "JavaScript"],
+    stack: ["HTML5", "CSS3", "JavaScript (Vanilla)", "SheetJS (xlsx.js)", "localStorage", "Python (pandas, matplotlib) — offline analiz eki"],
     github: "#",
     video: null,
-    related: ["hat-analizi", "uretim-programi"],
-    department: { tr: "Mekanik Üretim", en: "Mechanical Production" },
-    lines: [],
-    // ÖRNEK veri — gerçek rakamlarla değiştir
+    related: ["hat-analizi"],
+    lines: ["alfa-sargi", "odawara-sargi", "rotor-hatti", "muhafaza-otomasyon"],
     automation: {
-      manHours: { tr: "Aylık ~20 saat", en: "~20 hrs/month" },
-      cycleTimeBeforeMin: 30,
-      cycleTimeAfterMin: 4
-    }
+      manHours: { tr: "Aylık ~15 saat (tahmini)", en: "~15 hrs/month (estimated)" },
+      cycleTimeBeforeMin: 5,
+      cycleTimeAfterMin: 0.5
+    },
+    sections: [
+      { type: "text", content: { tr: "Sahada BM veya Stator koduna göre ürün ağacı bilgisine ulaşmak eskiden dağınık Excel/kağıt listeler arasında dakikalar sürüyordu.  Uygulamayı canlı denemek için <a href='assets/projects/bom-app/demo/bom_app_demo_anonimlestirilmis.html' target='_blank' rel='noopener' style='text-decoration:underline;'><strong>buraya tıklayın</strong></a>.", en: "Looking up BOM information by assembly or stator code on the shop floor used to take minutes of flipping through scattered Excel sheets or paper lists.  Try the live app <a href='assets/projects/bom-app/demo/bom_app_demo_anonimlestirilmis.html' target='_blank' rel='noopener' style='text-decoration:underline;'><strong>here</strong></a>." } },
+      { type: "image", src: "assets/projects/bom-app/demo-arama-ekrani.png", caption: { tr: "Anlık BOM arama ve gruplu sonuç kartları", en: "Instant BOM lookup with grouped result cards" } },
+      { type: "text", content: { tr: "Bir adım öteye geçip 'bu stator kodu başka hangi modellerde kullanılıyor' sorusuna da tek dokunuşla cevap verildi.", en: "Taking it a step further, a single tap now answers 'which other models use this stator code'." } },
+      { type: "image", src: "assets/projects/bom-app/demo-stator-ortak-kullanim.png", caption: { tr: "Stator kodu ortak kullanım ters-araması", en: "Reverse lookup for shared stator codes" } },
+      { type: "text", content: { tr: "Aynı uygulamaya, ayrı bir Excel dosyasına bakma ihtiyacını ortadan kaldıran, filtrelenebilir ve düzenlenebilir bir kadro (vardiya) yönetim modülü de eklendi.", en: "The same app also includes a filterable, editable roster module that removes the need to check a separate Excel file." } },
+      { type: "image", src: "assets/projects/bom-app/demo-kadro-ekrani.png", caption: { tr: "Birim/cinsiyet/sözleşme türüne göre filtrelenebilen kadro ekranı", en: "Roster screen, filterable by department, gender, and contract type" } },
+      { type: "text", content: { tr: "Aynı veri yapısını bu kez toplu bakış açısıyla incelemek için Python (pandas) ile offline bir analiz katmanı da eklendi — bu, sitede çalışmaz, yalnızca rapor/görsel üretir.", en: "The same data structure was also analyzed in bulk using an offline Python (pandas) layer — this doesn't run on the site, it only generates reports/visuals." } },
+      { type: "image", src: "assets/projects/bom-app/parca_ortakligi.png", caption: { tr: "En çok paylaşılan parça kodları — stok konsolidasyonu fırsatları", en: "Most-shared component codes — stock consolidation opportunities" } },
+      { type: "image", src: "assets/projects/bom-app/veri_tamligi.png", caption: { tr: "Alan bazlı veri tamlığı raporu", en: "Field-level data completeness report" } },
+      { type: "text", content: { tr: "Sonuç: arama süresi dakikalardan saniyelere indi, ortak parça görünürlüğü stok tartışmalarına somut bir başlangıç noktası sağladı.", en: "Result: lookup time dropped from minutes to seconds, and shared-part visibility gave stock discussions a concrete starting point." } }
+    ]
   },
   {
     id: "hat-analizi",

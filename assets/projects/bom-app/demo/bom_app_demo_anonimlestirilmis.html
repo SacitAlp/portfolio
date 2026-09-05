@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BOM Uygulaması – BOM + KADRO</title>
+  <style>
+    :root{
+      --bg:#0f172a;--panel:#0b122d;--text:#e5e7eb;--muted:#94a3b8;
+      --line:rgba(255,255,255,.12);--brand:#22d3ee;--brand2:#a78bfa;
+      --navh: 88px;
+    }
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#081233);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;display:flex; flex-direction:column; min-height:100vh;padding-bottom: calc(var(--navh) + 8px + env(safe-area-inset-bottom,0px));}
+    .wrap{max-width:960px;margin:0 auto;padding:16px; flex: 1 0 auto;}
+    header{position:sticky;top:0;background:rgba(8,18,51,.85);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);z-index:10}
+    .hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px}
+    .title{font-weight:800;letter-spacing:.2px}
+    .status{font-size:12px;color:var(--muted)}
+    .section{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+    .row{display:flex;flex-direction:column;gap:8px}
+    label{font-size:12px;color:var(--muted)}
+    input,button,select,textarea{width:100%;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px 0.5px;font-size:15px}
+    button{border:0;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#001018;font-weight:700;cursor:pointer}
+    .ghost{background:transparent;border:1px dashed var(--line)!important;color:var(--text)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+    .card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:10px}
+    .card h3{margin:0 0 8px 0;font-size:14px;letter-spacing:.2px;color:#dbeafe}
+    .item{display:flex;flex-direction:column;gap:4px;border:1px solid rgba(255,255,255,.08);padding:8px;border-radius:10px}
+    .item .k{font-size:12px;color:var(--muted)}
+    .item .v{font-weight:700}
+    .item.clickable-stator{
+      cursor:pointer;
+      border-color:rgba(34,211,238,.45);
+      background:rgba(34,211,238,.06);
+    }
+
+    .item.clickable-stator:hover{
+      background:rgba(34,211,238,.12);
+      transform:translateY(-1px);
+    }
+
+    .item.clickable-stator .v{
+      color:#67e8f9;
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+    .hidden{display:none}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:13px;cursor:pointer;color:#ffffff}
+    .chip:hover{opacity:.9}
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,18,51,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:20;height:var(--navh); padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px);}
+    .tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:0;height:100%}
+    .tab{padding:10px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);text-decoration:none;border-top:3px solid transparent}
+    .tab svg{width:22px;height:22px;fill:currentColor;opacity:.9}
+    .tab span{font-size:12px}
+    .tab.active{color:#e6f9ff;border-top-color:var(--brand)}
+    .app-footer{position:relative ;width: 100%; text-align: center; font-size: 11px; color: var(--muted); opacity: 0; pointer-events: none; letter-spacing: 0.3px;margin-top: 8px}
+	
+	@keyframes fadeIn {
+		from { opacity: 0; transform: translateY(10px); } /* hafif aşağıdan gelsin */
+		to { opacity: 0.85; transform: translateY(0); }
+	}
+	
+	.app-footer.fadein {
+		animation: fadeIn 1.2s ease-in forwards;
+	}
+	
+	.view > .section:last-of-type{
+  margin-bottom: calc(var(--navh) + env(safe-area-inset-bottom, 0px));
+}
+	.view > h2 { display: none !important; }
+    @media (max-width: 520px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px; } }
+    /* Modal */
+    .modal-backdrop{
+      position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      display: none; align-items: center; justify-content: center; z-index: 1000;
+    }
+    .modal-backdrop.show{ display:flex; }
+    .modal{
+      background:#0b122d; border:1px solid var(--line); border-radius:14px;
+      max-width: 720px; width: calc(100% - 28px); box-shadow: 0 10px 40px rgba(0,0,0,.5);
+    }
+    .modal header{ position:unset; background:transparent; border-bottom:1px solid var(--line); }
+    .modal .body{ padding:12px; max-height: 60vh; overflow:auto; }
+    .pick-list{ display:flex; flex-direction:column; gap:8px; margin:8px 0; }
+    .pick-item{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding:10px; border:1px solid var(--line); border-radius:10px; background:rgba(255,255,255,.03);
+      cursor:pointer;
+    }
+    .pick-item:hover{ background:rgba(255,255,255,.06); }
+    .pill{ font-size:12px; color:var(--muted); border:1px solid var(--line); padding:4px 8px; border-radius:999px; }
+    .modal .actions{ display:flex; gap:8px; justify-content:flex-end; padding:12px; border-top:1px solid var(--line); }
+    
+    /* Kadro tablo */
+    table.kadro {width:100%; border-collapse: collapse; font-size:14px}
+    table.kadro th, table.kadro td {border-bottom:1px solid var(--line); padding:8px; text-align:left}
+    table.kadro th {color:#c7d2fe; font-weight:700}
+    .toolbar {display:flex; flex-wrap:wrap; gap:8px}
+    .toolbar > * {flex:1 0 180px}
+    .row-actions button {padding:6px 8px; font-size:12px}
+    /* Undo bar */
+    .undo {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--navh) + 20px);
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #1e293b;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.35);
+      z-index: 100;
+      max-width: 90%;
+    }
+    .undo.hidden { display: none; }
+    html,body{overscroll-behavior: none; overscroll-behavior-y: contain;}
+   .icon-btn{ background:transparent; border:1px solid var(--line); color:var(--text); border-radius:10px; width:28px; height:28px; display:grid; place-items:center; padding:0; cursor:pointer; line-height:1; font-size:16px; }
+   .icon-btn:active{ opacity:.85 }
+   .wide-btn{ flex:1 0 280px; }
+
+@media (max-width: 520px){
+  /* Ensure the label-wrapped import button is easy to tap */
+  label[for="bomImportFile"] { display:inline-block; }
+  /* If there is a toolbar area, prevent overflow by allowing wrap */
+  .toolbar, .button-row { flex-wrap: wrap; gap: .5rem; }
+}
+
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+</head>
+<body>
+  <header>
+    <div class="hdr wrap">
+      <div class="title" id="appTitle">BOM Uygulaması</div>
+      <div id="appStatus" class="status">Hazır</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- BOM MODÜLÜ -->
+    <section id="view-bom" class="view">
+      <section class="section">
+        <div class="row">
+          <div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:8px;">
+  <div>
+    <label>BM Birleşik</label>
+    <input id="bmInput" type="text" placeholder="     Örn: 90001" />
+  </div>
+  <div>
+    <label>Stator Kodu</label>
+    <input id="stInput" type="text" placeholder="     Örn: 200-S1" />
+  </div>
+</div>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <button id="findBtn" type="button" style="flex:1 0 140px">Bul</button>
+            <button id="clearBtn" class="ghost" type="button" style="flex:1 0 140px">Temizle</button>
+            <label for="bomImportFile" style="display:inline-block; display:contents;"><button id="importBomBtn" class="ghost wide-btn" type="button" style="flex:1 0 200px">Ürün Ağacı İçe Aktar</button></label>
+<input type="file" id="bomImportFile" accept=".csv, .xls, .xlsx, text/csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="position:absolute; left:-9999px; width:1px; height:1px;" />
+            <button id="exportBomTemplateBtn" class="ghost wide-btn" type="button" style="flex:1 0 200px">Ürün Ağacı Şablon İndir</button>
+          </div>
+		  <div style="margin-top:8px;display:flex;gap:8px;">
+			<button id="resetBomOverride" class="ghost" type="button" style="flex:1 0 200px">
+				Yerel BOM Verisini Sıfırla
+			</button>
+		  </div>
+          <div id="statusFind" class="status">Veri hazır. BM veya Stator girip “Bul”a basın.</div>
+          <div id="recentWrap" class="chips hidden" aria-label="Son aramalar"></div>
+          <div style="margin-top:6px;display:flex;gap:8px">
+            <button id="clearRecentBtn" class="ghost" type="button" style="flex:1 0 180px">Son Aramaları Temizle</button>
+          </div>
+        </div>
+      </section>
+      
+      <section id="result" class="section hidden">
+        <div class="grid">
+          <div class="card" id="grp-genel"><h3>Genel</h3><div class="group-body"></div></div>
+          <div class="card" id="grp-rotor"><h3>Rotor</h3><div class="group-body"></div></div>
+          <div class="card" id="grp-stator"><h3>Stator</h3><div class="group-body"></div></div>
+          <div class="card" id="grp-alt"><h3>Alt Muhafaza</h3><div class="group-body"></div></div>
+          <div class="card" id="grp-ust"><h3>Üst Muhafaza</h3><div class="group-body"></div></div>
+        </div>
+        <div id="rowCount" class="status" style="margin-top:8px"></div>
+      </section>
+      <footer class="app-footer">
+        <span>© 2025 <b>DalmisTech</b> | Mekanik Üretim Takımı</span>
+      </footer>
+    </section>
+
+    <!-- KADRO MODÜLÜ -->
+    <section id="view-kadro" class="view hidden">
+      <section class="section">
+        <div class="row">
+          <div class="toolbar">
+            <input id="qName" placeholder="Ad Soyad ara..." />
+            <select id="qBirim"><option value="">Birim (hepsi)</option></select>
+            <select id="qCins"><option value="">Cinsiyet (hepsi)</option></select>
+            <select id="qSoz"><option value="">Sözleşme (hepsi)</option></select>
+            <button id="btnClearKadro" class="ghost">Filtreyi Temizle</button>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section">
+        <div class="row">
+          <details>
+            <summary><b>Yeni Kişi Ekle</b></summary>
+            <div class="grid" style="margin-top:8px">
+              <div><label>Personel No</label><input id="fNo" /></div>
+              <div><label>Ad Soyad</label><input id="fAd" /></div>
+              <div><label>Birim</label><select id="fBirimSel"><option value="">Seçiniz</option></select></div>
+              <div><label>Yetkinlik</label><input id="fYet" /></div>
+              <div><label>Cinsiyet</label><select id="fCinSel"><option value="">Seçiniz</option></select></div>
+              <div><label>Sözleşme türü</label><select id="fSozSel"><option value="">Seçiniz</option></select></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="btnAdd">Ekle</button>
+              <button id="btnReset" class="ghost">Tüm Yerel Değişiklikleri Sıfırla</button>
+              <button id="btnImport" class="ghost">Excel İçe Aktar</button>
+              <button id="btnExport" class="ghost">Excel Dışa Aktar</button>
+            </div>
+            <div id="kadroStatus" class="status"></div>
+          </details>
+        </div>
+      </section>
+      
+      <section class="section">
+        <div style="overflow:auto">
+          <table class="kadro" id="kadroTable">
+            <thead>
+              <tr>
+                <th>Personel Numarası</th>
+                <th>Ad Soyad</th>
+                <th>Birim</th>
+                <th>Yetkinlik</th>
+                <th>Cinsiyet</th>
+                <th>Sözleşme türü</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div id="kadroCount" class="status" style="margin-top:8px"></div>
+          <div id="undoBar" class="undo hidden" role="status" aria-live="polite">
+            <span id="undoMsg">Bir kayıt silindi.</span>
+            <button id="btnUndo" type="button" class="ghost" style="margin-left:auto">Geri Al</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Ana gezinti">
+    <div class="tabs wrap" id="bottomTabs">
+      <a class="tab" data-target="#bom" href="#bom" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-9 9 9v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-8z"/></svg>
+        <span>BOM</span>
+      </a>
+      <a class="tab" data-target="#kadro" href="#kadro">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 0114 0H5z"/></svg>
+        <span>KADRO</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Embedded CSVs in hidden textareas -->
+  <textarea id="bom_csv" style="display:none">Model;Stok No;BM Birleşik;Not;Stok No;Kod;Sac Kalınlığı;Sac Grade;Tip;Boy;Mıknatıs;Stok No;Kod;Çevrim Süresi;%90 OEE Normal (425 dk);%90 OEE Çay Yemek (480 dk);Sac Kalınlığı;Sac Grade;Tip;Boy;Tel Kalınlık;Spir Sayısı;Tel Tipi;Stok No;Tip;Sac Bilgisi;Giriş Borusu;Ölçüler;Servis Borusu;Ölçüler;Çıkış Borusu;Ölçüler;Stok No;Tip;Sac Bilgisi;BKT
+MDL-A7;-;90001;;-;100-X3;1,00;GR-A100;Delta;50;16;-;200-S2;;;;1,00;GR-A100;Delta;50;18;720;Tip-B;-;Delta Alt;;-;;-;;-;;-;Delta Üst;;VAR
+MDL-A7;-;90002;;-;100-X2;1,60;GR-C300;Delta;50;16;-;200-S2;;;;1,60;GR-C300;Delta;50;12;880;Tip-B;-;Delta Alt;;-;;-;;-;;-;Delta Üst;;VAR
+MDL-A7;9719927151;90003;;9100000001;100-X3;1,00;GR-C300;Delta;65;8;9100000002;200-S1;27,6;939,1;1061,2;1,00;GR-C300;Delta;65;14;760;Tip-A;9100000003;Delta Alt;2,40 x 600 x R FX20;9100000004;11.37 x 51.0(+2.3 -1.1) Tip-A;9100000004;11.37 x 51.0(+2.3 -1.1) Tip-A;9100000005;13.92 x 55.4(+2.5 -0.9) Tip-B;9100000006;Delta Üst;2,80 x 700 x R FX20;VAR
+MDL-A7;-;90004;;-;100-X1;1,60;GR-A100;Delta;60;4;-;200-S1;;;;1,60;GR-A100;Delta;60;12;720;Tip-B;-;Delta Alt;;-;;-;;-;;-;Delta Üst;;VAR
+MDL-A7;9171069472;90005;;9100000007;100-X3;1,00;GR-C300;Delta;60;16;9100000008;200-S2;23,7;1093,7;1235,9;1,00;GR-C300;Delta;60;10;880;Tip-A;9100000009;Delta Alt;2,80 x 700 x R FX20;9100000010;11.98 x 54.6(+1.4 -1.4) Tip-A;9100000010;11.98 x 54.6(+1.4 -1.4) Tip-A;9100000011;13.74 x 58.4(+2.2 -0.7) Tip-A;9100000012;Delta Üst;2,40 x 650 x R FX20;VAR
+MDL-A9;9950488739;90006;;9100000013;100-X3;1,20;GR-C300;Delta;65;4;9100000014;200-S2;26,6;974,4;1101,1;1,20;GR-C300;Delta;65;14;760;Tip-A;9100000015;Delta Alt;2,80 x 700 x R FX20;9100000016;13.16 x 57.5(+1.6 -1.1) Tip-B;9100000016;13.16 x 57.5(+1.6 -1.1) Tip-B;9100000017;11.88 x 60.0(+1.8 -0.6) Tip-A;9100000018;Delta Üst;2,00 x 600 x R FX20;VAR
+MDL-A9;9264109919;90007;;9100000019;100-X1;1,20;GR-C300;Delta;60;16;9100000020;200-S4;23,8;1089,1;1230,7;1,20;GR-C300;Delta;60;10;720;Tip-B;9100000021;Delta Alt;2,80 x 650 x R FX20;9100000022;11.45 x 54.3(+1.7 -1.5) Tip-B;9100000022;11.45 x 54.3(+1.7 -1.5) Tip-B;9100000023;14.89 x 57.6(+1.8 -0.6) Tip-B;9100000024;Delta Üst;2,80 x 700 x R FX20;VAR
+MDL-A9;9666585408;90008;;9100000025;100-X2;1,60;GR-A100;Delta;70;8;9100000026;200-S5;29,5;878,6;992,8;1,60;GR-A100;Delta;70;16;720;Tip-A;9100000027;Delta Alt;2,40 x 650 x R FX20;9100000028;11.96 x 52.4(+1.9 -0.6) Tip-B;9100000028;11.96 x 52.4(+1.9 -0.6) Tip-B;9100000029;14.26 x 59.8(+1.8 -0.6) Tip-B;9100000030;Delta Üst;2,80 x 600 x R FX20;VAR
+MDL-K100;9399012686;90009;;9100000031;100-X2;1,60;GR-A100;Kappa;60;8;9100000032;200-S5;27,6;939,1;1061,2;1,60;GR-A100;Kappa;60;14;840;Tip-B;9100000033;Kappa Alt;2,00 x 600 x R FX20;9100000034;11.9 x 53.4(+1.9 -0.7) Tip-A;9100000034;11.9 x 53.4(+1.9 -0.7) Tip-A;9100000035;11.03 x 57.1(+1.1 -0.6) Tip-A;9100000036;Kappa Üst;2,40 x 600 x R FX20;VAR
+MDL-K100;9304235259;90010;;9100000037;100-X2;1,60;GR-C300;Kappa;65;4;9100000038;200-S5;21,3;1216,9;1375,1;1,60;GR-C300;Kappa;65;16;840;Tip-A;9100000039;Kappa Alt;2,00 x 600 x R FX20;9100000040;13.64 x 53.5(+1.6 -1.4) Tip-A;9100000040;13.64 x 53.5(+1.6 -1.4) Tip-A;9100000041;13.69 x 59.8(+1.1 -0.9) Tip-B;9100000042;Kappa Üst;2,00 x 600 x R FX20;VAR
+MDL-K100;9384759615;90011;;9100000043;100-X2;1,20;GR-A100;Kappa;50;8;9100000044;200-S4;21,8;1189,0;1343,6;1,20;GR-A100;Kappa;50;18;720;Tip-A;9100000045;Kappa Alt;2,80 x 700 x R FX20;9100000046;14.34 x 59.7(+2.4 -1.3) Tip-A;9100000046;14.34 x 59.7(+2.4 -1.3) Tip-A;9100000047;12.63 x 54.8(+2.3 -1.4) Tip-A;9100000048;Kappa Üst;2,40 x 600 x R FX20;YOK
+MDL-K100;9825003955;90012;;9100000049;100-X4;1,60;GR-C300;Kappa;65;4;9100000050;200-S3;24,2;1071,1;1210,3;1,60;GR-C300;Kappa;65;12;800;Tip-A;9100000051;Kappa Alt;2,00 x 700 x R FX20;9100000052;13.94 x 50.6(+1.5 -0.6) Tip-B;9100000052;13.94 x 50.6(+1.5 -0.6) Tip-B;9100000053;13.01 x 58.5(+1.2 -1.5) Tip-A;9100000054;Kappa Üst;2,00 x 600 x R FX20;VAR
+MDL-K100;9766964667;90013;;9100000055;100-X4;1,60;GR-A100;Kappa;70;16;9100000056;200-S1;29,4;881,6;996,2;1,60;GR-A100;Kappa;70;10;880;Tip-A;9100000057;Kappa Alt;2,40 x 700 x R FX20;9100000058;13.33 x 55.2(+2.4 -0.7) Tip-B;9100000058;13.33 x 55.2(+2.4 -0.7) Tip-B;9100000059;11.95 x 54.0(+2.0 -0.8) Tip-B;9100000060;Kappa Üst;2,00 x 600 x R FX20;YOK
+MDL-K105;9897163846;90014;;9100000061;100-X1;1,20;GR-A100;Kappa;60;4;9100000062;200-S5;22,1;1172,9;1325,4;1,20;GR-A100;Kappa;60;12;800;Tip-B;9100000063;Kappa Alt;2,00 x 650 x R FX20;9100000064;14.33 x 57.0(+1.9 -1.5) Tip-A;9100000064;14.33 x 57.0(+1.9 -1.5) Tip-A;9100000065;13.67 x 55.5(+2.4 -0.6) Tip-A;9100000066;Kappa Üst;2,40 x 600 x R FX20;VAR
+MDL-K105;9180792472;90015;;9100000067;100-X3;1,60;GR-B200;Kappa;55;16;9100000068;200-S3;26,0;996,9;1126,5;1,60;GR-B200;Kappa;55;14;880;Tip-B;9100000069;Kappa Alt;2,40 x 600 x R FX20;9100000070;11.37 x 54.2(+1.4 -0.5) Tip-A;9100000070;11.37 x 54.2(+1.4 -0.5) Tip-A;9100000071;13.55 x 52.6(+2.1 -1.1) Tip-B;9100000072;Kappa Üst;2,80 x 600 x R FX20;VAR
+MDL-K105;9354194771;90016;;9100000073;100-X2;1,20;GR-C300;Kappa;70;4;9100000074;200-S5;20,4;1270,6;1435,8;1,20;GR-C300;Kappa;70;16;760;Tip-A;9100000075;Kappa Alt;2,40 x 650 x R FX20;9100000076;14.6 x 58.0(+2.3 -1.4) Tip-A;9100000076;14.6 x 58.0(+2.3 -1.4) Tip-A;9100000077;13.73 x 56.7(+1.5 -1.1) Tip-B;9100000078;Kappa Üst;2,80 x 700 x R FX20;VAR
+MDL-K105;9174539964;90017;;9100000079;100-X2;1,60;GR-B200;Kappa;65;16;9100000080;200-S4;20,2;1283,2;1450,0;1,60;GR-B200;Kappa;65;12;800;Tip-A;9100000081;Kappa Alt;2,80 x 600 x R FX20;9100000082;12.53 x 50.4(+1.7 -0.7) Tip-B;9100000082;12.53 x 50.4(+1.7 -0.7) Tip-B;9100000083;12.4 x 58.2(+2.3 -0.7) Tip-A;9100000084;Kappa Üst;2,40 x 650 x R FX20;VAR
+MDL-K105;9101815992;90018;;9100000085;100-X3;1,20;GR-C300;Kappa;70;8;9100000086;200-S3;26,4;981,8;1109,4;1,20;GR-C300;Kappa;70;10;720;Tip-B;9100000087;Kappa Alt;2,00 x 700 x R FX20;9100000088;14.85 x 52.7(+1.2 -0.9) Tip-B;9100000088;14.85 x 52.7(+1.2 -0.9) Tip-B;9100000089;12.75 x 59.8(+1.2 -1.4) Tip-A;9100000090;Kappa Üst;2,40 x 600 x R FX20;YOK
+MDL-K125;9561588882;90019;;9100000091;100-X2;1,60;GR-B200;Kappa;70;8;9100000092;200-S3;24,3;1066,7;1205,4;1,60;GR-B200;Kappa;70;10;800;Tip-B;9100000093;Kappa Alt;2,80 x 650 x R FX20;9100000094;12.3 x 57.0(+1.8 -0.7) Tip-B;9100000094;12.3 x 57.0(+1.8 -0.7) Tip-B;9100000095;13.71 x 59.0(+1.9 -0.8) Tip-A;9100000096;Kappa Üst;2,40 x 650 x R FX20;VAR
+MDL-K125;9545002643;90020;;9100000097;100-X3;1,60;GR-A100;Kappa;70;8;9100000098;200-S4;24,4;1062,3;1200,4;1,60;GR-A100;Kappa;70;12;720;Tip-B;9100000099;Kappa Alt;2,80 x 700 x R FX20;9100000100;13.53 x 53.4(+2.2 -1.3) Tip-B;9100000100;13.53 x 53.4(+2.2 -1.3) Tip-B;9100000101;11.9 x 52.0(+1.0 -0.7) Tip-B;9100000102;Kappa Üst;2,80 x 600 x R FX20;YOK
+MDL-K125;9991816852;90021;;9100000103;100-X2;1,20;GR-B200;Kappa;55;4;9100000104;200-S6;27,0;960,0;1084,8;1,20;GR-B200;Kappa;55;10;720;Tip-B;9100000105;Kappa Alt;2,00 x 600 x R FX20;9100000106;14.22 x 57.0(+1.7 -1.1) Tip-A;9100000106;14.22 x 57.0(+1.7 -1.1) Tip-A;9100000107;12.83 x 58.0(+2.0 -1.5) Tip-B;9100000108;Kappa Üst;2,40 x 700 x R FX20;YOK
+MDL-K125;9545461013;90022;;9100000109;100-X4;1,20;GR-B200;Kappa;60;4;9100000110;200-S2;27,4;946,0;1069,0;1,20;GR-B200;Kappa;60;14;880;Tip-B;9100000111;Kappa Alt;2,80 x 600 x R FX20;9100000112;12.1 x 50.8(+1.4 -0.8) Tip-B;9100000112;12.1 x 50.8(+1.4 -0.8) Tip-B;9100000113;14.57 x 50.8(+1.2 -0.9) Tip-A;9100000114;Kappa Üst;2,80 x 600 x R FX20;VAR
+MDL-K125;9621454127;90023;;9100000115;100-X4;1,20;GR-B200;Kappa;70;16;9100000116;200-S4;20,6;1258,3;1421,9;1,20;GR-B200;Kappa;70;10;880;Tip-B;9100000117;Kappa Alt;2,40 x 600 x R FX20;9100000118;14.77 x 53.0(+1.6 -1.4) Tip-B;9100000118;14.77 x 53.0(+1.6 -1.4) Tip-B;9100000119;13.15 x 57.3(+2.2 -1.4) Tip-B;9100000120;Kappa Üst;2,00 x 650 x R FX20;YOK
+MDL-K130;9120812641;90024;;9100000121;100-X4;1,20;GR-A100;Kappa;70;16;9100000122;200-S6;21,7;1194,5;1349,8;1,20;GR-A100;Kappa;70;10;840;Tip-A;9100000123;Kappa Alt;2,00 x 700 x R FX20;9100000124;12.71 x 58.7(+1.3 -0.8) Tip-B;9100000124;12.71 x 58.7(+1.3 -0.8) Tip-B;9100000125;11.85 x 53.3(+2.1 -0.9) Tip-B;9100000126;Kappa Üst;2,40 x 600 x R FX20;YOK
+MDL-K130;9721358005;90025;;9100000127;100-X1;1,00;GR-C300;Kappa;50;4;9100000128;200-S3;22,2;1167,6;1319,4;1,00;GR-C300;Kappa;50;12;760;Tip-A;9100000129;Kappa Alt;2,80 x 600 x R FX20;9100000130;11.95 x 54.7(+1.2 -1.4) Tip-B;9100000130;11.95 x 54.7(+1.2 -1.4) Tip-B;9100000131;13.8 x 57.7(+1.3 -1.1) Tip-A;9100000132;Kappa Üst;2,00 x 650 x R FX20;VAR
+MDL-K130;-;90026;;-;100-X3;1,60;GR-B200;Kappa;65;16;-;200-S5;;;;1,60;GR-B200;Kappa;65;12;720;Tip-A;-;Kappa Alt;;-;;-;;-;;-;Kappa Üst;;VAR
+MDL-K145;9599154414;90027;;9100000133;100-X1;1,20;GR-C300;Kappa;65;16;9100000134;200-S5;27,8;932,4;1053,6;1,20;GR-C300;Kappa;65;14;720;Tip-B;9100000135;Kappa Alt;2,00 x 650 x R FX20;9100000136;14.29 x 51.1(+2.4 -1.1) Tip-B;9100000136;14.29 x 51.1(+2.4 -1.1) Tip-B;9100000137;13.83 x 54.4(+2.1 -1.5) Tip-B;9100000138;Kappa Üst;2,80 x 700 x R FX20;YOK
+MDL-K145;9359154084;90028;;9100000139;100-X3;1,00;GR-B200;Kappa;65;4;9100000140;200-S3;28,5;909,5;1027,7;1,00;GR-B200;Kappa;65;16;880;Tip-B;9100000141;Kappa Alt;2,40 x 600 x R FX20;9100000142;12.98 x 53.3(+1.7 -0.9) Tip-B;9100000142;12.98 x 53.3(+1.7 -0.9) Tip-B;9100000143;12.36 x 58.8(+2.1 -0.8) Tip-A;9100000144;Kappa Üst;2,80 x 600 x R FX20;VAR
+MDL-K145;9229553265;90029;;9100000145;100-X4;1,60;GR-B200;Kappa;65;8;9100000146;200-S5;27,6;939,1;1061,2;1,60;GR-B200;Kappa;65;10;720;Tip-B;9100000147;Kappa Alt;2,00 x 650 x R FX20;9100000148;13.77 x 53.1(+1.9 -1.0) Tip-B;9100000148;13.77 x 53.1(+1.9 -1.0) Tip-B;9100000149;12.7 x 57.5(+1.5 -1.2) Tip-B;9100000150;Kappa Üst;2,40 x 650 x R FX20;VAR
+MDL-K145;9113169872;90030;;9100000151;100-X3;1,60;GR-A100;Kappa;55;4;9100000152;200-S1;27,4;946,0;1069,0;1,60;GR-A100;Kappa;55;16;800;Tip-B;9100000153;Kappa Alt;2,00 x 600 x R FX20;9100000154;12.18 x 53.6(+1.5 -1.2) Tip-A;9100000154;12.18 x 53.6(+1.5 -1.2) Tip-A;9100000155;12.1 x 59.7(+1.8 -1.2) Tip-A;9100000156;Kappa Üst;2,80 x 650 x R FX20;VAR
+MDL-K145;9575368059;90031;;9100000157;100-X4;1,00;GR-A100;Kappa;60;8;9100000158;200-S4;24,4;1062,3;1200,4;1,00;GR-A100;Kappa;60;10;720;Tip-B;9100000159;Kappa Alt;2,40 x 600 x R FX20;9100000160;13.31 x 56.9(+1.2 -1.3) Tip-B;9100000160;13.31 x 56.9(+1.2 -1.3) Tip-B;9100000161;11.34 x 52.5(+1.8 -0.9) Tip-A;9100000162;Kappa Üst;2,80 x 650 x R FX20;YOK
+MDL-K165;9384063364;90032;;9100000163;100-X4;1,00;GR-C300;Kappa;50;4;9100000164;200-S3;25,7;1008,6;1139,7;1,00;GR-C300;Kappa;50;12;800;Tip-A;9100000165;Kappa Alt;2,00 x 600 x R FX20;9100000166;11.7 x 50.8(+1.0 -1.0) Tip-B;9100000166;11.7 x 50.8(+1.0 -1.0) Tip-B;9100000167;12.17 x 52.3(+2.1 -1.2) Tip-B;9100000168;Kappa Üst;2,00 x 700 x R FX20;VAR
+MDL-K165;9563887247;90033;;9100000169;100-X2;1,00;GR-C300;Kappa;55;8;9100000170;200-S4;21,1;1228,4;1388,1;1,00;GR-C300;Kappa;55;12;720;Tip-A;9100000171;Kappa Alt;2,00 x 650 x R FX20;9100000172;13.38 x 58.2(+2.4 -0.9) Tip-B;9100000172;13.38 x 58.2(+2.4 -0.9) Tip-B;9100000173;13.75 x 57.0(+2.4 -1.0) Tip-B;9100000174;Kappa Üst;2,40 x 600 x R FX20;VAR
+MDL-K165;9272684373;90034;;9100000175;100-X3;1,60;GR-C300;Kappa;70;4;9100000176;200-S1;20,9;1240,2;1401,4;1,60;GR-C300;Kappa;70;14;880;Tip-A;9100000177;Kappa Alt;2,00 x 650 x R FX20;9100000178;13.08 x 54.4(+1.4 -1.5) Tip-B;9100000178;13.08 x 54.4(+1.4 -1.5) Tip-B;9100000179;13.54 x 54.9(+1.1 -0.8) Tip-B;9100000180;Kappa Üst;2,40 x 700 x R FX20;VAR
+MDL-K165;9689720101;90035;;9100000181;100-X4;1,20;GR-C300;Kappa;50;8;9100000182;200-S3;26,6;974,4;1101,1;1,20;GR-C300;Kappa;50;10;800;Tip-B;9100000183;Kappa Alt;2,40 x 600 x R FX20;9100000184;14.88 x 54.0(+1.8 -1.5) Tip-B;9100000184;14.88 x 54.0(+1.8 -1.5) Tip-B;9100000185;12.65 x 51.9(+1.5 -1.3) Tip-B;9100000186;Kappa Üst;2,00 x 600 x R FX20;VAR
+</textarea>
+  <textarea id="kadro_csv" style="display:none">Personel Numarası;Ad Soyad;Birim;Yetkinlik;Cinsiyet;Sözleşme türü
+90010001;İbrahim Kaya;Laminasyon;Vardiya Sorumlusu;Erkek;Belirli
+90010002;Hüseyin Kaya;Laminasyon;;Erkek;Belirli
+90010003;Mehmet Kurt;Laminasyon;;Erkek;Belirsiz
+90010004;Ali Demir;Laminasyon;;Erkek;Belirsiz
+90010005;Umut Şahin;Laminasyon;;Erkek;Belirli
+90010006;Kemal Koç;Laminasyon;;Erkek;Belirli
+90010007;Ahmet Çelik;Laminasyon;;Erkek;Belirsiz
+90010008;Zeynep Şahin;Laminasyon;;Kadın;Belirsiz
+90010009;Kemal Aydın;Muhafaza;Vardiya Sorumlusu;Erkek;Belirsiz
+90010010;Burak Demir;Muhafaza;;Erkek;Belirli
+90010011;Emre Kurt;Muhafaza;;Erkek;Belirsiz
+90010012;Pınar Özdemir;Muhafaza;;Kadın;Belirsiz
+90010013;Elif Yıldız;Muhafaza;;Kadın;Belirli
+90010014;Kemal Doğan;Muhafaza;;Erkek;Belirsiz
+90010015;Aylin Özdemir;Muhafaza;;Kadın;Belirsiz
+90010016;Burak Kurt;Rotor;Vardiya Sorumlusu;Erkek;Belirli
+90010017;Zeynep Şimşek;Rotor;;Kadın;Belirsiz
+90010018;Selim Demir;Rotor;;Erkek;Belirsiz
+90010019;Aylin Aslan;Rotor;;Kadın;Belirsiz
+90010020;Fatma Demir;Rotor;;Kadın;Belirsiz
+90010021;Aylin Demir;Rotor;;Kadın;Belirli
+90010022;Merve Koç;Sargı;Vardiya Sorumlusu;Kadın;Belirsiz
+90010023;Emre Aslan;Sargı;;Erkek;Belirli
+90010024;Emre Kaya;Sargı;;Erkek;Belirli
+90010025;Zeynep Öztürk;Sargı;;Kadın;Belirsiz
+90010026;Buse Demir;Sargı;;Kadın;Belirli
+90010027;Gül Arslan;Sargı;;Kadın;Belirli
+90010028;Derya Arslan;Sargı;;Kadın;Belirsiz
+90010029;Sibel Koç;Sargı;;Kadın;Belirli
+</textarea>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(s){return document.querySelector(s)};
+  var APP_KEY_LASTTAB='app_last_tab';
+  var rows=[], headers=[], dataLoaded=false;
+  var RECENT_KEY='bm_recent_values';
+
+  function getText(id){ var el=document.getElementById(id); return el ? (el.textContent||el.value||'') : ''; }
+
+  //ARAMA+KARTLAR
+  function parseCSV(text){
+    if(!text) return [];
+    if(text.charCodeAt(0)===0xFEFF){ text=text.slice(1); }
+    var firstLine = (text.split(/\r?\n/)[0] || '');
+    var comma = (firstLine.match(/,/g)||[]).length;
+    var semi  = (firstLine.match(/;/g)||[]).length;
+    var delim = semi>comma ? ';' : ',';
+    var out=[], cur='', row=[], i=0, inQ=false;
+    function pushCell(){ row.push(cur); cur=''; }
+    function pushRow(){ out.push(row); row=[]; }
+    while(i<text.length){
+      var c=text[i];
+      if(inQ){
+        if(c=='"'){ if(text[i+1]=='"'){cur+='"';i++;} else { inQ=false; } }
+        else { cur+=c; }
+      } else {
+        if(c=='"'){ inQ=true; }
+        else if(c==delim){ pushCell(); }
+        else if(c=='\n'){ pushCell(); pushRow(); }
+        else if(c=='\r'){ }
+        else { cur+=c; }
+      }
+      i++;
+    }
+    if(cur!=='' || row.length){ pushCell(); pushRow(); }
+    out = out.filter(function(r){ return r && r.some(function(c){ return String(c||'').trim()!==''; }); });
+    if(out.length){ out[0] = out[0].map(function(h){ return String(h||'').replace(/^\uFEFF/,'').trim(); }); }
+    return out;
+  }
+
+var GROUPS = {};
+var GROUP_COLS = {};
+var GROUP_RANGES = [];
+
+  function escapeHtml(s){ return (s==null?'':String(s)).replace(/[&<>\\\"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]; }); }
+
+  function setStatus(t){ var el=$('#appStatus'); if(el) el.textContent=t; }
+  function setStatusFind(t){ var el=$('#statusFind'); if(el) el.textContent=t; }
+
+  function getStatorKodIndex(){
+    var idx = -1;
+    try{
+      if (GROUP_COLS && GROUP_COLS['Stator'] && GROUP_COLS['Stator']['Kod'] != null){
+        idx = GROUP_COLS['Stator']['Kod'];
+      }
+    }catch(e){}
+    if(idx === -1){
+      // Fallback: find first 'Kod' after 'Stator' group start based on GROUP_RANGES
+      var start = 0;
+      for(var i=0;i<GROUP_RANGES.length;i++){
+        if(GROUP_RANGES[i][0]==='Stator'){
+          var size = GROUP_RANGES[i][1];
+          var end = start + size;
+          for(var j=start;j<end;j++){ if(String(headers[j]||'').trim()==='Kod'){ return j; } }
+          break;
+        }
+        start += GROUP_RANGES[i][1];
+      }
+    }
+    return idx;
+  }
+  function findByStatorAll(value){
+    if(!dataLoaded){ setStatusFind('Veri hazır değil'); return []; }
+    var idxSt = getStatorKodIndex();
+    if(idxSt===-1){ setStatusFind('Başlıklar içinde Stator "Kod" bulunamadı'); return []; }
+    var q = String(value||'').trim().toLowerCase();
+    var out = [];
+    for(var i=1;i<rows.length;i++){
+      var cell = String(rows[i][idxSt]||'').trim().toLowerCase();
+      if(cell===q){ out.push({row: rows[i], idx: i}); }
+    }
+    return out;
+  }
+
+  function openStatorUsageModal(statorKod){
+    var kod = String(statorKod || '').trim();
+
+    if(!kod){
+      setStatusFind('Stator kodu boş.');
+      return;
+    }
+
+    var matches = findByStatorAll(kod);
+
+    if(!matches.length){
+      setStatusFind('Bu stator kodu için eşleşme bulunamadı: ' + kod);
+      return;
+    }
+
+    showPickModal(matches, kod);
+    setStatusFind(kod + ' stator kodu için ' + matches.length + ' BM bulundu.');
+  }
+
+  function showPickModal(matches, query){
+    var backdrop = document.getElementById('pickModal');
+    var list = document.getElementById('pickList');
+    var info = document.getElementById('pickInfo');
+    var title = document.getElementById('pickTitle');
+
+    
+    if(!backdrop || !list) return;
+
+    list.innerHTML = '';
+
+    if(title){
+      title.textContent = 'Stator kodunu kullanan BM listesi';
+    }
+
+    if(info){
+      info.textContent = 'Stator Kodu: ' + (query || '') + ' • ' + matches.length + ' eşleşme';
+    }
+
+
+    // Determine some column indices for display
+    var idxModel = headers.indexOf('Model');
+    var idxBM = headers.indexOf('BM Birleşik');
+    matches.forEach(function(m){
+      var r = m.row;
+      var model = (idxModel>-1 ? (r[idxModel]||'') : '');
+      var bm = (idxBM>-1 ? (r[idxBM]||'') : '');
+      var btn = document.createElement('button');
+      btn.type='button';
+      btn.className='pick-item';
+      btn.innerHTML =
+        '<div>' +
+          '<div style="font-weight:700">' + escapeHtml(String(model || '-')) + '</div>' +
+          '<div class="status">BM Birleşik: ' + escapeHtml(String(bm || '-')) + '</div>' +
+        '</div>' +
+        '<span class="pill">Aç</span>';
+
+      btn.addEventListener('click', function(){
+        renderGroups(r);
+        pushRecent(query);
+        hidePickModal();
+        setStatusFind('Bulundu ('+ matches.length +' eşleşmeden seçildi)');
+      });
+      list.appendChild(btn);
+    });
+    backdrop.classList.add('show');
+    backdrop.setAttribute('aria-hidden','false');
+    var cx = document.getElementById('pickCloseX');
+    var cc = document.getElementById('pickCancel');
+    if(cx && !cx._bound){ cx._bound=true; cx.addEventListener('click', hidePickModal); }
+    if(cc && !cc._bound){ cc._bound=true; cc.addEventListener('click', hidePickModal); }
+
+  }
+  function hidePickModal(){
+    var backdrop = document.getElementById('pickModal');
+    if(backdrop){
+      backdrop.classList.remove('show');
+      backdrop.setAttribute('aria-hidden','true');
+    }
+  }
+
+  window.hidePickModal = hidePickModal;
+
+  function loadEmbedded(){
+    // Prefer BOM base override from localStorage if present
+    var override=null;
+    try{ override = localStorage.getItem('bom_base_override'); }catch(e){ override=null; }
+    var EMBEDDED_CSV = override ? override : getText('bom_csv');
+    rows = parseCSV(EMBEDDED_CSV);
+    if(!rows.length){ setStatus('Gömülü veri boş'); dataLoaded=false; return; }
+    headers = rows[0];
+    
+    // === Range-based group mapping (autobuild) ===
+    GROUP_RANGES = [
+      ["Genel", 4],
+      ["Rotor", 7],
+      ["Stator", 12],
+      ["Alt Muhafaza", 9],
+      ["Üst Muhafaza", 4]
+    ];
+    var expectedCount = GROUP_RANGES.reduce(function(a,b){ return a + b[1]; }, 0);
+    if(headers.length !== expectedCount){
+      console.warn('Başlık sayısı uyuşmuyor. Beklenen:', expectedCount, 'Gelen:', headers.length);
+      setStatus('Başlık sayısı '+headers.length+' (beklenen '+expectedCount+'). İçe aktarılan dosyanın kolon sırasını kontrol edin.');
+      // Devam etsek de eşleme hatalı olur; yine de kullanıcı arayüzü çalışsın.
+    }
+    GROUPS = {};
+    GROUP_COLS = {};
+    var start = 0;
+    GROUP_RANGES.forEach(function(pair){
+      var name = pair[0], count = pair[1];
+      var end = start + count;
+      var slice = headers.slice(start, end);
+      GROUPS[name] = slice;
+      GROUP_COLS[name] = {};
+      for(var i = start; i < end; i++){
+        GROUP_COLS[name][ headers[i] ] = i;
+      }
+      start = end;
+    });
+dataLoaded = true;
+    var rc = $('#rowCount'); if(rc) rc.textContent = (rows.length-1)+' satır yüklendi';
+    buildGroupIndices();
+  }
+  
+  // Helper: find header index by label within a named group's column range
+  function findHeaderInGroup(headers, groupName, label){
+    if(!Array.isArray(GROUP_RANGES) || !GROUP_RANGES.length) return -1;
+    var start = 0, size = -1;
+    for(var i=0;i<GROUP_RANGES.length;i++){
+      if(GROUP_RANGES[i][0] === groupName){ size = GROUP_RANGES[i][1]; break; }
+      start += GROUP_RANGES[i][1];
+    }
+    if(size <= 0) return -1;
+    var end = start + size;
+    // exact match first
+    for(var j=start;j<end;j++){
+      if(String(headers[j]||'').trim() === String(label).trim()) return j;
+    }
+    // fallback: loose (case-insensitive, normalize spaces)
+    var target = String(label||'').trim().toLowerCase();
+    for(var j2=start;j2<end;j2++){
+      var h = String(headers[j2]||'').trim().toLowerCase();
+      if(h === target) return j2;
+    }
+    return -1;
+  }
+  // === /Range-based group mapping ===
+  
+  function buildGroupIndices(){
+    GROUP_COLS = {};
+    var cursor = 0;
+    Object.keys(GROUPS).forEach(function(gname){
+      var seq = GROUPS[gname];
+      GROUP_COLS[gname] = {};
+      seq.forEach(function(label){
+        var idx = -1;
+        for(var i=cursor;i<headers.length;i++){ if(headers[i]===label){ idx=i; break; } }
+        if(idx===-1){ idx = headers.indexOf(label); }
+        else { cursor = idx + 1; }
+        GROUP_COLS[gname][label] = idx;
+      });
+    });
+  }
+
+  function findByBM(value){
+    if(!dataLoaded){ setStatusFind('Veri hazır değil'); return null; }
+    var idxBM = headers.indexOf('BM Birleşik');
+    if(idxBM===-1){ setStatusFind('Başlıklar içinde "BM Birleşik" yok'); return null; }
+    value = String(value||'').trim().toLowerCase();
+    for(var i=1;i<rows.length;i++){
+      var cell = String(rows[i][idxBM]||'').trim().toLowerCase();
+      if(cell===value) return rows[i];
+    }
+    return null;
+  }
+
+   function renderGroups(row){
+    var mappings = [
+      ['Genel','grp-genel'],
+      ['Rotor','grp-rotor'],
+      ['Stator','grp-stator'],
+      ['Alt Muhafaza','grp-alt'],
+      ['Üst Muhafaza','grp-ust']
+    ];
+    mappings.forEach(function(pair){
+      var gName=pair[0], gId=pair[1];
+      var box = document.querySelector('#'+gId+' .group-body');
+      if(!box) return;
+      box.innerHTML='';
+      GROUPS[gName].forEach(function(key){
+        var colIdx = (GROUP_COLS && GROUP_COLS[gName] && GROUP_COLS[gName][key] != null) ? GROUP_COLS[gName][key] : headers.indexOf(key);
+        if(colIdx>-1){
+          var val = row[colIdx];
+          if(val!=null && String(val).trim()!==''){
+            var div=document.createElement('div');
+	    div.className='item';
+	    div.innerHTML = '<div class="k">'+escapeHtml(key)+'</div><div class="v">'+escapeHtml(String(val))+'</div>';
+
+	    // Stator kartındaki "Kod" alanını tıklanabilir yap
+	    if(gName === 'Stator' && key === 'Kod'){
+ 	      div.classList.add('clickable-stator');
+ 	      div.setAttribute('role', 'button');
+ 	      div.setAttribute('tabindex', '0');
+ 	      div.setAttribute('title', 'Bu stator kodunu kullanan BM listesini göster');
+
+  	      div.addEventListener('click', function(){
+    	        openStatorUsageModal(val);
+ 	      });
+
+  	      div.addEventListener('keydown', function(e){
+   	        if(e.key === 'Enter' || e.key === ' '){
+    	          e.preventDefault();
+  	          openStatorUsageModal(val);
+   	        }
+ 	      });
+	    }
+
+	    box.appendChild(div);
+          }
+        }
+      });
+    });
+    var res=document.querySelector('#result'); if(res) res.classList.remove('hidden');
+  }
+
+  //SON ARAMALAR (BOM)
+  function loadRecentList(){ try{ return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]'); } catch(e){ return []; } }
+  function saveRecentList(list){ localStorage.setItem(RECENT_KEY, JSON.stringify(list)); }
+  function pushRecent(value){
+    var v=String(value||'').trim(); if(!v) return;
+    var list=loadRecentList().filter(function(x){ return x!==v; });
+    list.unshift(v);
+    if(list.length>10) list=list.slice(0,10);
+    saveRecentList(list);
+    renderRecent();
+  }
+  function renderRecent(){
+    var list=loadRecentList();
+    var wrap=document.querySelector('#recentWrap');
+    if(!wrap) return;
+    if(!list.length){ wrap.classList.add('hidden'); wrap.innerHTML=''; return; }
+    wrap.classList.remove('hidden');
+    wrap.innerHTML='';
+    list.forEach(function(v){
+  var b=document.createElement('button');
+  b.type='button'; b.className='chip'; b.textContent=v;
+  b.addEventListener('click', function(){
+    var bm=document.getElementById('bmInput');
+    var st=document.getElementById('stInput');
+    var active=document.activeElement;
+    var target=null;
+    if(active===bm||active===st){ target=active; }
+    else if(typeof lastFocused!=='undefined' && document.getElementById(lastFocused)) { target=document.getElementById(lastFocused); }
+    else { target=bm||st; }
+    if(target){ target.value=v; onFind(); }
+  });
+  wrap.appendChild(b);
+});}
+  function clearRecent(){ localStorage.removeItem(RECENT_KEY); renderRecent(); }
+  function findByStator(value){
+    if(!dataLoaded){ setStatusFind('Veri hazır değil'); return null; }
+    var idxSt = (GROUP_COLS && GROUP_COLS['Stator'] && GROUP_COLS['Stator']['Kod'] != null) ? GROUP_COLS['Stator']['Kod'] : -1;
+    if(idxSt===-1){ idxSt = findHeaderInGroup(headers, 'Stator', 'Kod'); }
+    if(idxSt===-1){ setStatusFind('Başlıklar içinde Stator "Kod" bulunamadı'); return null; }
+    value = String(value||'').trim().toLowerCase();
+    for(var i=1;i<rows.length;i++){
+      var cell = String(rows[i][idxSt]||'').trim().toLowerCase();
+      if(cell===value) return rows[i];
+    }
+    return null;
+  }
+
+function onFind(){
+  var bmInp=document.querySelector('#bmInput');
+  var stInp=document.querySelector('#stInput');
+  var bm = bmInp ? bmInp.value.trim() : '';
+  var st = stInp ? stInp.value.trim() : '';
+
+  if(!bm && !st){
+    setStatusFind('BM veya Stator Kodu girin');
+    var res=document.querySelector('#result'); if(res) res.classList.add('hidden');
+    return;
+  }
+
+  // If ONLY Stator is provided, collect ALL exact matches
+  if(!bm && st){
+    var list = findByStatorAll(st);
+    if(list.length === 0){
+      setStatusFind('Eşleşme bulunamadı');
+      var r0=document.querySelector('#result'); if(r0) r0.classList.add('hidden');
+      return;
+    } else if(list.length === 1){
+      setStatusFind('Bulundu');
+      pushRecent(st);
+      renderGroups(list[0].row);
+      return;
+    } else {
+      showPickModal(list, st);
+      return;
+    }
+  }
+
+  // Fallback to original dual logic for bm and bm+st
+  var row=null, rowByBm=null, rowBySt=null;
+  if(bm){ rowByBm = findByBM(bm); }
+  if(st){ rowBySt = findByStator(st); }
+
+  if(bm && st){
+    if(rowByBm && rowBySt && rowByBm === rowBySt){
+      row = rowByBm;
+    } else if(rowByBm && rowBySt){
+      setStatusFind('Girdiğiniz BM ve Stator aynı satırı işaret etmiyor.');
+      var res1=document.querySelector('#result'); if(res1) res1.classList.add('hidden');
+      return;
+    } else {
+      setStatusFind('Eşleşme bulunamadı');
+      var res2=document.querySelector('#result'); if(res2) res2.classList.add('hidden');
+      return;
+    }
+  } else {
+    row = rowByBm || rowBySt;
+  }
+
+  if(!row){
+    setStatusFind('Eşleşme bulunamadı');
+    var res3=document.querySelector('#result'); if(res3) res3.classList.add('hidden');
+    return;
+  }
+
+  setStatusFind('Bulundu');
+  pushRecent(bm || st);
+  renderGroups(row);
+}
+function onClear(){
+  var bm=document.getElementById('bmInput');
+  var st=document.getElementById('stInput');
+  if(bm) bm.value='';
+  if(st) st.value='';
+  var res=document.getElementById('result'); if(res) res.classList.add('hidden');
+  if (typeof setStatusFind === 'function') setStatusFind('Temizlendi');
+}
+
+  function setActiveTab(hash){
+    var tabs=document.querySelectorAll('.bottom-nav .tab');
+    tabs.forEach(function(a){
+      var target=a.getAttribute('href');
+      a.classList.toggle('active', target===hash);
+    });
+  }
+  function showView(name){
+    var all=document.querySelectorAll('.view');
+    all.forEach(function(v){ v.classList.add('hidden'); });
+    var el=document.getElementById('view-'+name);
+    if(el){ el.classList.remove('hidden'); localStorage.setItem(APP_KEY_LASTTAB, name); }
+    setActiveTab('#'+name);
+    var titles={bom:'BOM • BM Arama', kadro:'Kadro'};
+    var t=document.getElementById('appTitle'); if(t) t.textContent=titles[name]||'BOM Uygulaması';
+  }
+  function handleHash(){
+    var h=location.hash.replace('#','')||localStorage.getItem(APP_KEY_LASTTAB)||'bom';
+    if(!['bom','kadro'].includes(h)) h='bom';
+    showView(h);
+  }
+
+  // ==== Kadro ====
+  var K_HEADERS = ['Personel Numarası','Ad Soyad','Birim','Yetkinlik','Cinsiyet','Sözleşme türü'];
+  var K_BASE = [];
+  var K_ADD_KEY='kadro_additions';
+  var K_DEL_KEY='kadro_deletions';
+  var EDITING_ID=null;
+  var K_FILTERS={bir:[],cin:[],soz:[]};
+
+  function loadKadro(){
+    var OV_KEY = 'kadro_base_override';
+    try{
+      var raw = localStorage.getItem(OV_KEY);
+      if(raw){
+        var arr = JSON.parse(raw);
+        if(Array.isArray(arr) && arr.length){
+          K_BASE = arr.map(function(x){
+            var o={};
+            K_HEADERS.forEach(function(h){ o[h] = (x && x[h]!=null) ? String(x[h]) : ''; });
+            return o;
+          });
+          return;
+        }
+      }
+    } catch(e){ /* ignore */ }
+
+    var KADRO_CSV = getText('kadro_csv');
+    var r = parseCSV(KADRO_CSV);
+    if(!r.length) return;
+    var h = r[0];
+    var idx = K_HEADERS.map(function(hn){ return h.indexOf(hn); });
+    K_BASE = r.slice(1).map(function(row){
+      var o={};
+      K_HEADERS.forEach(function(hn, i){ o[hn] = idx[i] >=0 ? row[idx[i]] : ''; });
+      return o;
+    });
+  }
+
+  function getAdditions(){ try{ return JSON.parse(localStorage.getItem(K_ADD_KEY)||'[]'); }catch(_){ return []; } }
+  function getDeletions(){ try{ return new Set(JSON.parse(localStorage.getItem(K_DEL_KEY)||'[]')); }catch(_){ return new Set(); } }
+  function saveAdditions(a){ localStorage.setItem(K_ADD_KEY, JSON.stringify(a)); }
+  function saveDeletions(s){ localStorage.setItem(K_DEL_KEY, JSON.stringify(Array.from(s))); }
+
+  function effectiveRows(){
+    var dels = getDeletions();
+    var eff = K_BASE.filter(function(r){ return !dels.has(String(r['Personel Numarası'])); });
+    var adds = getAdditions();
+    return eff.concat(adds);
+  }
+
+  function getFilteredKadroRows(){
+    var name = (document.getElementById('qName')||{}).value || '';
+    name = name.toLowerCase().trim();
+    var bir  = (document.getElementById('qBirim')||{}).value || '';
+    var cin  = (document.getElementById('qCins')||{}).value || '';
+    var soz  = (document.getElementById('qSoz')||{}).value || '';
+
+    var rows = effectiveRows().filter(function(r){
+      if(name && String(r['Ad Soyad']||'').toLowerCase().indexOf(name)===-1) return false;
+      if(bir && r['Birim']!==bir) return false;
+      if(cin && r['Cinsiyet']!==cin) return false;
+      if(soz && r['Sözleşme türü']!==soz) return false;
+      return true;
+    });
+    return rows;
+  }
+
+  function buildOptions(list, selected){
+    return list.map(function(v){
+      var s = (String(v)===String(selected)) ? ' selected' : '';
+      return '<option'+s+'>'+escapeHtml(v)+'</option>';
+    }).join('');
+  }
+  function buildSelect(id, list, selected, allowNew){
+    var html = '<select id="'+id+'"><option value="">'+'Seçiniz</option>'+ buildOptions(list, selected) + (allowNew?'<option value="__NEW__">+ Yeni değer…</option>':'') + '</select>';
+    return html;
+  }
+  function attachNewValuePromptTo(selectEl){
+    if(!selectEl) return;
+    selectEl.addEventListener('change', function(){
+      if(this.value === '__NEW__'){
+        var label = this.previousElementSibling ? this.previousElementSibling.textContent.trim() : 'Yeni değer';
+        var val = window.prompt(label + ' giriniz:');
+        if(val && val.trim()){
+          val = val.trim();
+          var opt = document.createElement('option');
+          opt.value = val; opt.textContent = val;
+          this.insertBefore(opt, this.querySelector('option[value="__NEW__"]'));
+          this.value = val;
+        } else {
+          this.value = '';
+        }
+      }
+    });
+  }
+
+  function fillFilters(){
+    var rows = effectiveRows();
+    function uniq(list, key){
+      var s=new Set(); list.forEach(function(x){ var v=String(x[key]||'').trim(); if(v) s.add(v); }); return Array.from(s).sort();
+    }
+    var bir = uniq(rows, 'Birim');
+    var cin = uniq(rows, 'Cinsiyet');
+    var soz = uniq(rows, 'Sözleşme türü');
+    K_FILTERS = {bir: bir, cin: cin, soz: soz};
+
+    var qB=document.getElementById('qBirim'); if(qB) qB.innerHTML='<option value="">'+'Birim (hepsi)</option>' + bir.map(function(v){return '<option>'+escapeHtml(v)+'</option>';}).join('');
+    var qC=document.getElementById('qCins'); if(qC) qC.innerHTML='<option value="">'+'Cinsiyet (hepsi)</option>' + cin.map(function(v){return '<option>'+escapeHtml(v)+'</option>';}).join('');
+    var qS=document.getElementById('qSoz'); if(qS) qS.innerHTML='<option value="">'+'Sözleşme (hepsi)</option>' + soz.map(function(v){return '<option>'+escapeHtml(v)+'</option>';}).join('');
+
+    var fB=document.getElementById('fBirimSel'); if(fB){ fB.innerHTML='<option value="">'+'Seçiniz</option>' + bir.map(function(v){return '<option>'+escapeHtml(v)+'</option>';}).join('') + '<option value="__NEW__">+ Yeni değer…</option>'; }
+    var fC=document.getElementById('fCinSel'); if(fC){ fC.innerHTML='<option value="">'+'Seçiniz</option>' + cin.map(function(v){return '<option>'+escapeHtml(v)+'</option>';}).join(''); }
+    var fS=document.getElementById('fSozSel'); if(fS){ fS.innerHTML='<option value="">'+'Seçiniz</option>' + soz.map(function(v){return '<option>'+escapeHtml(v)+'</option>';}).join('') + '<option value="__NEW__">+ Yeni değer…</option>'; }
+  }
+
+  function renderKadro(){
+    var name = (document.getElementById('qName')||{}).value || '';
+    name = name.toLowerCase().trim();
+    var bir  = (document.getElementById('qBirim')||{}).value || '';
+    var cin  = (document.getElementById('qCins')||{}).value || '';
+    var soz  = (document.getElementById('qSoz')||{}).value || '';
+
+    var rows = effectiveRows().filter(function(r){
+      if(name && String(r['Ad Soyad']||'').toLowerCase().indexOf(name)===-1) return false;
+      if(bir && r['Birim']!==bir) return false;
+      if(cin && r['Cinsiyet']!==cin) return false;
+      if(soz && r['Sözleşme türü']!==soz) return false;
+      return true;
+    });
+
+    var tb = document.querySelector('#kadroTable tbody'); if(!tb) return;
+    tb.innerHTML='';
+    rows.forEach(function(r){
+      var tr=document.createElement('tr');
+      var addsList = getAdditions();
+      var addIds = new Set(addsList.map(function(x){ return String(x['Personel Numarası']); }));
+      var origin = addIds.has(String(r['Personel Numarası'])) ? 'add' : 'base';
+      var recAttr = encodeURIComponent(JSON.stringify(r));
+      var isEditing = (EDITING_ID === String(r['Personel Numarası']));
+      if(isEditing){
+        var selBirim = buildSelect('edBirim-'+r['Personel Numarası'], K_FILTERS.bir, r['Birim'], true);
+        var selCin   = buildSelect('edCin-'+r['Personel Numarası'], K_FILTERS.cin, r['Cinsiyet'], false);
+        var selSoz   = buildSelect('edSoz-'+r['Personel Numarası'], K_FILTERS.soz, r['Sözleşme türü'], true);
+        tr.innerHTML = ''
+          + '<td>'+escapeHtml(r['Personel Numarası'])+'</td>'
+          + '<td><input id="edAd-'+r['Personel Numarası']+'" value="'+escapeHtml(r['Ad Soyad'])+'"></td>'
+          + '<td>'+selBirim+'</td>'
+          + '<td><input id="edYet-'+r['Personel Numarası']+'" value="'+escapeHtml(r['Yetkinlik']||'')+'"></td>'
+          + '<td>'+selCin+'</td>'
+          + '<td>'+selSoz+'</td>'
+          + '<td class="row-actions">'
+          +   '<button data-save="'+escapeHtml(String(r['Personel Numarası']))+'">Kaydet</button> '
+          +   '<button data-cancel="'+escapeHtml(String(r['Personel Numarası']))+'" class="ghost">Vazgeç</button>'
+          + '</td>';
+      } else {
+        tr.innerHTML = '<td>'+escapeHtml(r['Personel Numarası'])+'</td>' +
+                       '<td>'+escapeHtml(r['Ad Soyad'])+'</td>' +
+                       '<td>'+escapeHtml(r['Birim'])+'</td>' +
+                       '<td>'+escapeHtml(r['Yetkinlik']||'')+'</td>' +
+                       '<td>'+escapeHtml(r['Cinsiyet']||'')+'</td>' +
+                       '<td>'+escapeHtml(r['Sözleşme türü']||'')+'</td>' +
+                       '<td class="row-actions">'
+                       + '<button data-edit="'+escapeHtml(String(r['Personel Numarası']))+'" class="ghost">Düzenle</button> '
+                       + '<button data-del="'+escapeHtml(String(r['Personel Numarası']))+'" data-origin="'+origin+'" data-rec="'+recAttr+'" class="ghost">Sil</button>'
+                       + '</td>';
+      }
+      tb.appendChild(tr);
+      if(isEditing){
+        attachNewValuePromptTo(document.getElementById('edBirim-'+r['Personel Numarası']));
+        attachNewValuePromptTo(document.getElementById('edSoz-'+r['Personel Numarası']));
+      }
+    });
+
+    var kc=document.getElementById('kadroCount'); if(kc) kc.textContent = rows.length + ' kayıt';
+
+    tb.querySelectorAll('button[data-edit]').forEach(function(b){
+      b.addEventListener('click', function(){
+        EDITING_ID = b.getAttribute('data-edit');
+        renderKadro();
+      });
+    });
+    tb.querySelectorAll('button[data-cancel]').forEach(function(b){
+      b.addEventListener('click', function(){
+        EDITING_ID = null;
+        renderKadro();
+      });
+    });
+    tb.querySelectorAll('button[data-save]').forEach(function(b){
+      b.addEventListener('click', function(){
+        var id = b.getAttribute('data-save');
+        var o = {
+          'Personel Numarası': id,
+          'Ad Soyad': (document.getElementById('edAd-'+id)||{}).value ? document.getElementById('edAd-'+id).value.trim() : '',
+          'Birim': (document.getElementById('edBirim-'+id)||{}).value ? document.getElementById('edBirim-'+id).value.trim() : '',
+          'Yetkinlik': (document.getElementById('edYet-'+id)||{}).value ? document.getElementById('edYet-'+id).value.trim() : '',
+          'Cinsiyet': (document.getElementById('edCin-'+id)||{}).value ? document.getElementById('edCin-'+id).value.trim() : '',
+          'Sözleşme türü': (document.getElementById('edSoz-'+id)||{}).value ? document.getElementById('edSoz-'+id).value.trim() : ''
+        };
+        var adds = getAdditions();
+        var addIdx = adds.findIndex(function(x){ return String(x['Personel Numarası'])===String(id); });
+        if(addIdx>-1){
+          adds[addIdx] = o;
+          saveAdditions(adds);
+        } else {
+          var d = getDeletions(); d.add(String(id)); saveDeletions(d);
+          adds.push(o); saveAdditions(adds);
+        }
+        EDITING_ID = null;
+        fillFilters(); renderKadro();
+      });
+    });
+    tb.querySelectorAll('button[data-del]').forEach(function(b){
+      b.addEventListener('click', function(){
+        var id = b.getAttribute('data-del');
+        var origin = b.getAttribute('data-origin') || 'base';
+        var rec = null;
+        try { rec = JSON.parse(decodeURIComponent(b.getAttribute('data-rec')||'')); } catch(e){ rec = null; }
+        var adds = getAdditions();
+        var msg = '';
+        if(origin==='add'){
+          var idx = adds.findIndex(function(x){ return String(x['Personel Numarası'])===String(id); });
+          if(idx>-1){ rec = adds[idx]; adds.splice(idx,1); saveAdditions(adds); msg = (rec && rec['Ad Soyad']) ? (rec['Ad Soyad']+' silindi') : 'Kayıt silindi'; }
+        } else {
+          var dels=getDeletions(); dels.add(String(id)); saveDeletions(dels); msg = (rec && rec['Ad Soyad']) ? (rec['Ad Soyad']+' silindi') : 'Kayıt silindi';
+        }
+        showUndo(msg, function(){
+          if(origin==='add'){
+            var a = getAdditions(); a.push(rec); saveAdditions(a);
+          } else {
+            var d = getDeletions(); d.delete(String(id)); saveDeletions(d);
+          }
+          fillFilters(); renderKadro();
+        });
+        fillFilters(); renderKadro();
+      });
+    });
+  }
+
+  var _undoTimer = null;
+  function showUndo(message, onUndo){
+    var bar=document.getElementById('undoBar'); if(!bar) return;
+    var msg=document.getElementById('undoMsg'); if(msg) msg.textContent=message || 'İşlem uygulandı';
+    bar.classList.remove('hidden');
+    var btn=document.getElementById('btnUndo');
+    if(btn){
+      var handler = function(){
+        clearTimeout(_undoTimer); _undoTimer=null;
+        bar.classList.add('hidden');
+        btn.removeEventListener('click', handler);
+        if(typeof onUndo==='function') onUndo();
+      };
+      btn.addEventListener('click', handler);
+    }
+    clearTimeout(_undoTimer);
+    _undoTimer = setTimeout(function(){
+      var btn=document.getElementById('btnUndo');
+      if(btn) btn.replaceWith(btn.cloneNode(true));
+      bar.classList.add('hidden');
+      _undoTimer=null;
+    }, 6000);
+  }
+
+  function bindKadro(){
+    var nm=document.getElementById('qName'); if(nm) nm.addEventListener('input', renderKadro);
+    ['qBirim','qCins','qSoz'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.addEventListener('change', renderKadro);
+    });
+
+    function attachNewValuePrompt(selId){
+      var sel = document.getElementById(selId);
+      if(!sel) return;
+      sel.addEventListener('change', function(){
+        if(this.value === '__NEW__'){
+          var label = this.previousElementSibling ? this.previousElementSibling.textContent.trim() : 'Yeni değer';
+          var val = window.prompt(label + ' giriniz:');
+          if(val && val.trim()){
+            val = val.trim();
+            var opt = document.createElement('option');
+            opt.value = val; opt.textContent = val;
+            this.insertBefore(opt, this.querySelector('option[value="__NEW__"]'));
+            this.value = val;
+          } else {
+            this.value = '';
+          }
+        }
+      });
+    }
+    attachNewValuePrompt('fBirimSel');
+    // Cinsiyet'te yeni değer yok
+    attachNewValuePrompt('fSozSel');
+
+    var add=document.getElementById('btnAdd');
+    if(add) add.addEventListener('click', function(){
+      var o = {
+        'Personel Numarası': (document.getElementById('fNo')||{}).value ? document.getElementById('fNo').value.trim() : '',
+        'Ad Soyad': (document.getElementById('fAd')||{}).value ? document.getElementById('fAd').value.trim() : '',
+        'Birim': (document.getElementById('fBirimSel')||{}).value ? document.getElementById('fBirimSel').value.trim() : '',
+        'Yetkinlik': (document.getElementById('fYet')||{}).value ? document.getElementById('fYet').value.trim() : '',
+        'Cinsiyet': (document.getElementById('fCinSel')||{}).value ? document.getElementById('fCinSel').value.trim() : '',
+        'Sözleşme türü': (document.getElementById('fSozSel')||{}).value ? document.getElementById('fSozSel').value.trim() : ''
+      };
+      if(!o['Personel Numarası'] || !o['Ad Soyad']){ var st=document.getElementById('kadroStatus'); if(st) st.textContent='Personel No ve Ad Soyad zorunlu'; return; }
+      var dels=getDeletions();
+      if(dels.has(String(o['Personel Numarası'])) ){ dels.delete(String(o['Personel Numarası'])); saveDeletions(dels); }
+      var adds=getAdditions();
+      var i=adds.findIndex(function(x){ return String(x['Personel Numarası'])===String(o['Personel Numarası']); });
+      if(i>-1) adds[i]=o; else adds.push(o);
+      saveAdditions(adds);
+      var st=document.getElementById('kadroStatus'); if(st) st.textContent='Eklendi / Güncellendi';
+      fillFilters(); renderKadro();
+    });
+    
+    var rst=document.getElementById('btnReset');
+    if(rst) rst.addEventListener('click', function(){
+      if (!confirm("Tüm yerel değişiklikleri (içe aktarılan kadro dahil) sıfırlamak istiyor musun?")) return;
+        localStorage.removeItem('kadro_base_override');localStorage.removeItem(K_ADD_KEY); localStorage.removeItem(K_DEL_KEY);
+        loadKadro();
+        fillFilters(); renderKadro();
+        var st=document.getElementById('kadroStatus'); if(st) st.textContent='Yerel değişiklikler sıfırlandı';
+    });
+    // Excel İçe Aktar
+    var imp=document.getElementById('btnImport'); if(imp) imp.addEventListener('click', function(){
+      try{
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv,text/csv';
+        input.addEventListener('change', function(){
+          if(!input.files || !input.files[0]) return;
+          var file = input.files[0];
+          var reader = new FileReader();
+          reader.onload = function(e){
+            try{
+              var text = e.target.result || '';
+              // BOM temizle
+              if(text && text.charCodeAt(0)===0xFEFF){ text = text.slice(1); }
+              // sep= satırını atla
+              text = text.replace(/^(?:\s*\uFEFF)?sep\s*=\s*[,;].*?(?:\r?\n)/i, '');
+
+              var rows = parseCSV(text);
+              if(!rows.length){ alert('CSV boş görünüyor.'); return; }
+              // parse sonrası "sep=" ilk satırsa düşür
+              if(rows[0] && rows[0].length===1 && /^sep\s*=/.test(String(rows[0][0]||'').trim())){
+                rows.shift();
+              }
+
+              var header = (rows[0] || []).map(function(h){
+                var s = (typeof normalizeTR==='function') ? normalizeTR(String(h||'')) : String(h||'');
+                return s.trim();
+              });
+              var want = (typeof normalizeTR==='function') ? K_HEADERS.map(function(h){ return normalizeTR(h).trim(); }) : K_HEADERS.map(function(h){ return String(h).trim(); });
+
+              var idx = want.map(function(hn){ return header.indexOf(hn); });
+              var missing = [];
+              want.forEach(function(hn, i){ if(idx[i] < 0) missing.push(K_HEADERS[i]); });
+              if(missing.length){
+                alert('Başlıklar uyumsuz. Eksik kolon(lar):\n- ' + missing.join('\n- '));
+                return;
+              }
+              var objs = rows.slice(1).map(function(r){
+                var o={};
+                K_HEADERS.forEach(function(hn, i){ o[hn] = idx[i] >= 0 ? (r[idx[i]]||'') : ''; });
+                return o;
+              });
+              localStorage.setItem('kadro_base_override', JSON.stringify(objs));
+              localStorage.removeItem('kadro_additions');
+              localStorage.removeItem('kadro_deletions');
+              K_BASE = objs;
+              var st=document.getElementById('kadroStatus'); if(st) st.textContent='CSV içe aktarıldı ve temel liste değiştirildi';
+              fillFilters(); renderKadro();
+            } catch(err){
+              alert('İçe aktarma sırasında hata: ' + (err && err.message ? err.message : String(err)));
+            }
+          };
+          // encoding otomatik
+          reader.readAsText(file);
+        });
+        input.click();
+      } catch(e){
+        alert('İçe aktarma başlatılamadı: ' + (e && e.message ? e.message : String(e)));
+      }
+    });
+
+  // Turkish text normalization to avoid combining-dot issues (I + U+0307)
+  function normalizeTR(str){
+    if(!str) return str;
+    // Replace 'I' + combining dot above with 'İ' (U+0130)
+    str = str.replace(/\u0049\u0307/g, '\u0130');
+    // If any lowercase 'i' + combining dot sneaks in, collapse to 'i'
+    str = str.replace(/\u0069\u0307/g, '\u0069');
+    // Remove stray combining dot above if left alone
+    str = str.replace(/\u0307/g, '');
+    return str;
+  }
+}
+
+  
+  // Dış scriptlerin güvenli erişebilmesi için global köprüler
+  window.fillFilters = fillFilters;
+  window.renderKadro = renderKadro;
+  window.effectiveRows = effectiveRows;
+  window.getFilteredKadroRows = getFilteredKadroRows;
+  window.loadKadro = loadKadro;
+
+  function boot(){
+    // BOM
+    loadEmbedded();
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    var findBtn=$('#findBtn'), clearBtn=$('#clearBtn'), clrRec=$('#clearRecentBtn');
+    if(findBtn) findBtn.addEventListener('click', onFind);
+    if(clearBtn) clearBtn.addEventListener('click', onClear);
+    if(clrRec) clrRec.addEventListener('click', clearRecent);
+    renderRecent();
+
+    // KADRO
+    loadKadro(); fillFilters(); bindKadro(); renderKadro();
+
+    var st=document.getElementById('appStatus'); if(st) st.textContent='Hazır';
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+    // Klavye kısayolları: Enter=Bul, Esc=Temizle
+    ['bmInput','stInput'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el && !el._keysBound){
+        el._keysBound = true;
+        el.addEventListener('keydown', function(ev){
+          if(ev.key === 'Enter'){ ev.preventDefault(); onFind(); }
+          else if(ev.key === 'Escape'){ ev.preventDefault(); onClear(); }
+        });
+      }
+    });
+
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  var K_HEADERS_EXCEL = [
+    'Personel Numarası',
+    'Ad Soyad',
+    'Birim',
+    'Yetkinlik',
+    'Cinsiyet',
+    'Sözleşme türü'
+  ];
+
+  window.K_HEADERS = window.K_HEADERS || K_HEADERS_EXCEL;
+
+  function normalizeTR(s){
+    if(s == null) return '';
+    return String(s)
+      .replace(/\u0049\u0307/g,'\u0130')
+      .replace(/\u0069\u0307/g,'i')
+      .replace(/\u0307/g,'')
+      .trim();
+  }
+
+  function escapeBasic(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+
+  function getAdditions(){
+    try {
+      return JSON.parse(localStorage.getItem('kadro_additions') || '[]');
+    } catch(_) {
+      return [];
+    }
+  }
+
+  function getDeletions(){
+    try {
+      return new Set(JSON.parse(localStorage.getItem('kadro_deletions') || '[]'));
+    } catch(_) {
+      return new Set();
+    }
+  }
+
+  function getBaseOverride(){
+    try {
+      var raw = localStorage.getItem('kadro_base_override');
+      if(!raw) return [];
+      var arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch(_) {
+      return [];
+    }
+  }
+
+  function effectiveRowsFromStorage(){
+    var base = getBaseOverride();
+    var dels = getDeletions();
+    var adds = getAdditions();
+
+    var eff = base.filter(function(r){
+      return r && !dels.has(String(r['Personel Numarası'] || ''));
+    });
+
+    return eff.concat(adds || []);
+  }
+
+  function applyCurrentFilters(rows){
+    var name = (document.getElementById('qName') || {}).value || '';
+    var bir  = (document.getElementById('qBirim') || {}).value || '';
+    var cin  = (document.getElementById('qCins') || {}).value || '';
+    var soz  = (document.getElementById('qSoz') || {}).value || '';
+
+    name = String(name).toLowerCase().trim();
+
+    return (rows || []).filter(function(r){
+      if(name && String(r['Ad Soyad'] || '').toLowerCase().indexOf(name) === -1) return false;
+      if(bir && r['Birim'] !== bir) return false;
+      if(cin && r['Cinsiyet'] !== cin) return false;
+      if(soz && r['Sözleşme türü'] !== soz) return false;
+      return true;
+    });
+  }
+
+  function scrapeVisibleTable(){
+    var tbl = document.querySelector('#kadroTable tbody');
+    var out = [];
+
+    if(!tbl) return out;
+
+    tbl.querySelectorAll('tr').forEach(function(tr){
+      var tds = tr.querySelectorAll('td');
+
+      if(tds.length >= 6){
+        out.push({
+          'Personel Numarası': tds[0].textContent.trim(),
+          'Ad Soyad': tds[1].textContent.trim(),
+          'Birim': tds[2].textContent.trim(),
+          'Yetkinlik': tds[3].textContent.trim(),
+          'Cinsiyet': tds[4].textContent.trim(),
+          'Sözleşme türü': tds[5].textContent.trim()
+        });
+      }
+    });
+
+    return out;
+  }
+
+  window.forceKadroSoftRefresh = function(){
+    try {
+      if(typeof window.loadKadro === 'function') {
+        window.loadKadro();
+      }
+    } catch(_) {}
+
+    try {
+      if(typeof window.fillFilters === 'function') {
+        window.fillFilters();
+      }
+    } catch(_) {}
+
+    try {
+      if(typeof window.renderKadro === 'function') {
+        window.renderKadro();
+        return;
+      }
+    } catch(_) {}
+
+    // Ana render çalışmazsa minimum tablo yenileme
+    try {
+      var tb = document.querySelector('#kadroTable tbody');
+      var kc = document.getElementById('kadroCount');
+
+      if(!tb) return;
+
+      var rows = applyCurrentFilters(effectiveRowsFromStorage());
+      tb.innerHTML = '';
+
+      rows.forEach(function(r){
+        var tr = document.createElement('tr');
+
+        tr.innerHTML =
+          '<td>' + escapeBasic(r['Personel Numarası']) + '</td>' +
+          '<td>' + escapeBasic(r['Ad Soyad']) + '</td>' +
+          '<td>' + escapeBasic(r['Birim']) + '</td>' +
+          '<td>' + escapeBasic(r['Yetkinlik']) + '</td>' +
+          '<td>' + escapeBasic(r['Cinsiyet']) + '</td>' +
+          '<td>' + escapeBasic(r['Sözleşme türü']) + '</td>' +
+          '<td class="row-actions">' +
+            '<button class="ghost" disabled>Düzenle</button> ' +
+            '<button class="ghost" disabled>Sil</button>' +
+          '</td>';
+
+        tb.appendChild(tr);
+      });
+
+      if(kc) kc.textContent = rows.length + ' kayıt';
+    } catch(_) {}
+  };
+
+  function getRowsForExport(){
+    var rows = [];
+
+    try {
+      if(typeof window.getFilteredKadroRows === 'function') {
+        rows = window.getFilteredKadroRows() || [];
+      }
+    } catch(_) {}
+
+    if(!rows || !rows.length) {
+      try {
+        if(typeof window.effectiveRows === 'function') {
+          rows = applyCurrentFilters(window.effectiveRows() || []);
+        }
+      } catch(_) {}
+    }
+
+    if(!rows || !rows.length) {
+      rows = applyCurrentFilters(effectiveRowsFromStorage());
+    }
+
+    if(!rows || !rows.length) {
+      rows = scrapeVisibleTable();
+    }
+
+    return rows || [];
+  }
+
+  function bindExcelExport(){
+    var btn = document.getElementById('btnExport');
+
+    if(!btn || typeof XLSX === 'undefined') return;
+
+    var clone = btn.cloneNode(true);
+    btn.parentNode.replaceChild(clone, btn);
+
+    clone.addEventListener('click', function(){
+      try {
+        var rows = getRowsForExport();
+        var headers = K_HEADERS_EXCEL.slice();
+        var aoa = [headers];
+
+        rows.forEach(function(r){
+          aoa.push([
+            String(r['Personel Numarası'] || ''),
+            String(r['Ad Soyad'] || ''),
+            String(r['Birim'] || ''),
+            String(r['Yetkinlik'] || ''),
+            String(r['Cinsiyet'] || ''),
+            String(r['Sözleşme türü'] || '')
+          ]);
+        });
+
+        var ws = XLSX.utils.aoa_to_sheet(aoa);
+
+        ws['!cols'] = [
+          {wch: 20},
+          {wch: 28},
+          {wch: 18},
+          {wch: 24},
+          {wch: 14},
+          {wch: 18}
+        ];
+
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Kadro');
+
+        var d = new Date();
+        var pad = function(n){ return String(n).padStart(2,'0'); };
+
+        var filename =
+          'kadro_' +
+          d.getFullYear() +
+          pad(d.getMonth() + 1) +
+          pad(d.getDate()) +
+          '_' +
+          pad(d.getHours()) +
+          pad(d.getMinutes()) +
+          '.xlsx';
+
+        XLSX.writeFile(wb, filename);
+      } catch(err) {
+        alert('Excel dışa aktarma hatası: ' + (err && err.message ? err.message : String(err)));
+      }
+    });
+  }
+
+  function bindExcelImport(){
+    var btn = document.getElementById('btnImport');
+
+    if(!btn || typeof XLSX === 'undefined') return;
+
+    var clone = btn.cloneNode(true);
+    btn.parentNode.replaceChild(clone, btn);
+
+    clone.addEventListener('click', function(){
+      try {
+        var input = document.createElement('input');
+
+        input.type = 'file';
+        input.accept = '.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel';
+
+        input.addEventListener('change', function(){
+          if(!input.files || !input.files[0]) return;
+
+          var file = input.files[0];
+
+          if(!/\.xlsx?$/i.test(file.name)) {
+            alert('Lütfen yalnızca Excel dosyası seçin: .xlsx veya .xls');
+            return;
+          }
+
+          var reader = new FileReader();
+
+          reader.onload = function(e){
+            try {
+              var wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+              var ws = wb.Sheets[wb.SheetNames[0]];
+
+              if(!ws) {
+                alert('Excel sayfası okunamadı.');
+                return;
+              }
+
+              var rows = XLSX.utils.sheet_to_json(ws, {
+                header: 1,
+                defval: '',
+                raw: false
+              });
+
+              if(!rows.length) {
+                alert('Excel boş görünüyor.');
+                return;
+              }
+
+              var headerRow = (rows[0] || []).map(normalizeTR);
+              var expected = K_HEADERS_EXCEL.map(normalizeTR);
+
+              var idx = expected.map(function(h){
+                return headerRow.indexOf(h);
+              });
+
+              var missing = [];
+
+              expected.forEach(function(h, i){
+                if(idx[i] < 0) {
+                  missing.push(K_HEADERS_EXCEL[i]);
+                }
+              });
+
+              if(missing.length) {
+                alert('Başlıklar uyumsuz. Eksik kolon(lar):\n- ' + missing.join('\n- '));
+                return;
+              }
+
+              var objs = rows.slice(1).map(function(r){
+                var o = {};
+
+                K_HEADERS_EXCEL.forEach(function(h, i){
+                  var col = idx[i];
+                  o[h] = col >= 0 ? String(r[col] == null ? '' : r[col]).trim() : '';
+                });
+
+                return o;
+              }).filter(function(o){
+                return String(o['Personel Numarası']).trim() || String(o['Ad Soyad']).trim();
+              });
+
+              if(!objs.length) {
+                alert('Veri satırı bulunamadı.');
+                return;
+              }
+
+              localStorage.setItem('kadro_base_override', JSON.stringify(objs));
+              localStorage.removeItem('kadro_additions');
+              localStorage.removeItem('kadro_deletions');
+
+              var st = document.getElementById('kadroStatus');
+              if(st) {
+                st.textContent = 'Excel içe aktarıldı ve temel kadro verisi güncellendi.';
+              }
+
+              window.forceKadroSoftRefresh();
+            } catch(err) {
+              alert('Excel içe aktarma hatası: ' + (err && err.message ? err.message : String(err)));
+            }
+          };
+
+          reader.onerror = function(){
+            alert('Excel dosyası okunamadı.');
+          };
+
+          reader.readAsArrayBuffer(file);
+        });
+
+        input.click();
+      } catch(err) {
+        alert('İçe aktarma başlatılamadı: ' + (err && err.message ? err.message : String(err)));
+      }
+    });
+  }
+
+  function initExcelBindings(){
+    var tries = 0;
+
+    var timer = setInterval(function(){
+      tries++;
+
+      if(typeof XLSX !== 'undefined') {
+        bindExcelImport();
+        bindExcelExport();
+        clearInterval(timer);
+      }
+
+      if(tries > 50) {
+        clearInterval(timer);
+      }
+    }, 120);
+  }
+
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initExcelBindings);
+  } else {
+    initExcelBindings();
+  }
+})();
+</script>
+
+<script>
+(function(){
+  function rebindClearFilters(){
+    var btn = document.getElementById('btnClearKadro');
+
+    if(!btn) return;
+
+    var clone = btn.cloneNode(true);
+    btn.parentNode.replaceChild(clone, btn);
+
+    clone.addEventListener('click', function(){
+      try {
+        ['qName','qBirim','qCins','qSoz'].forEach(function(id){
+          var el = document.getElementById(id);
+          if(el) el.value = '';
+        });
+
+        if(typeof window.fillFilters === 'function') {
+          window.fillFilters();
+        }
+
+        if(typeof window.renderKadro === 'function') {
+          window.renderKadro();
+        }
+
+        var st = document.getElementById('kadroStatus');
+        if(st) {
+          st.textContent = 'Filtreler temizlendi.';
+        }
+      } catch(err) {
+        alert('Filtre temizleme hatası: ' + (err && err.message ? err.message : String(err)));
+      }
+    });
+  }
+
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', rebindClearFilters);
+  } else {
+    rebindClearFilters();
+  }
+})();
+</script>
+
+<div id="pickModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pickTitle">
+    <header class="hdr">
+      <div>
+        <div class="title" id="pickTitle">Birden fazla stator eşleşmesi bulundu</div>
+        <div class="status">Listeden birini seçin</div>
+      </div>
+      <button id="pickCloseX" class="icon-btn" type="button" aria-label="Kapat">✕</button>
+    </header>
+
+    <div class="body">
+      <div id="pickInfo" class="status"></div>
+      <div id="pickList" class="pick-list"></div>
+    </div>
+
+    <div class="actions">
+      <button id="pickCancel" class="ghost" type="button">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function safeHidePickModal(){
+    var backdrop = document.getElementById('pickModal');
+
+    if(backdrop) {
+      backdrop.classList.remove('show');
+      backdrop.setAttribute('aria-hidden','true');
+    }
+  }
+
+  function bindPickModalOnce(){
+    var backdrop = document.getElementById('pickModal');
+    var cancel = document.getElementById('pickCancel');
+    var closeX = document.getElementById('pickCloseX');
+
+    if(backdrop && !backdrop._bound) {
+      backdrop._bound = true;
+
+      backdrop.addEventListener('click', function(e){
+        if(e.target === backdrop) {
+          if(typeof window.hidePickModal === 'function') {
+            window.hidePickModal();
+          } else {
+            safeHidePickModal();
+          }
+        }
+      });
+    }
+
+    if(cancel && !cancel._bound) {
+      cancel._bound = true;
+
+      cancel.addEventListener('click', function(){
+        if(typeof window.hidePickModal === 'function') {
+          window.hidePickModal();
+        } else {
+          safeHidePickModal();
+        }
+      });
+    }
+
+    if(closeX && !closeX._bound) {
+      closeX._bound = true;
+
+      closeX.addEventListener('click', function(){
+        if(typeof window.hidePickModal === 'function') {
+          window.hidePickModal();
+        } else {
+          safeHidePickModal();
+        }
+      });
+    }
+
+    if(!document._pickModalEscBound) {
+      document._pickModalEscBound = true;
+
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape') {
+          if(typeof window.hidePickModal === 'function') {
+            window.hidePickModal();
+          } else {
+            safeHidePickModal();
+          }
+        }
+      });
+    }
+  }
+
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindPickModalOnce);
+  } else {
+    bindPickModalOnce();
+  }
+})();
+</script>
+
+<script>
+  (function(){
+    window.lastFocused = 'bmInput';
+    ['bmInput','stInput'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el){
+        el.addEventListener('focus', function(){ window.lastFocused = id; });
+      }
+    });
+  })();
+</script>
+
+<script>
+(function(){
+  function getBomHeaders(){
+    try{
+      if (Array.isArray(window.headers) && window.headers.length) return window.headers.slice();
+      var csv = document.getElementById('bom_csv') ? (document.getElementById('bom_csv').textContent||'') : '';
+      if(!csv) return [];
+      var first = (csv.split(/\r?\n/)[0]||'');
+      var comma=(first.match(/,/g)||[]).length, semi=(first.match(/;/g)||[]).length;
+      var delim = semi>comma ? ';' : ',';
+      return first.split(delim).map(function(s){ return String(s==null?'':s).trim(); });
+    }catch(e){ return []; }
+  }
+  function bindTemplateBtn(){
+    var btn = document.getElementById('exportBomTemplateBtn');
+    if(!btn) return;
+    var clone = btn.cloneNode(true); btn.parentNode.replaceChild(clone, btn);
+    clone.addEventListener('click', function(){
+      var headers = typeof getBomHeaders === 'function' ? getBomHeaders() : [];
+if(!headers.length){ alert('Başlıklar alınamadı.'); return; }
+if (typeof XLSX === 'undefined' || !XLSX.utils) { alert('XLSX kütüphanesi bulunamadı.'); return; }
+var wb = XLSX.utils.book_new();
+var ws = XLSX.utils.aoa_to_sheet([headers]);
+XLSX.utils.book_append_sheet(wb, ws, 'Şablon');
+var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+var blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+downloadBlob('urun_agaci_sablon.xlsx', blob);
+    });
+  }
+  if (document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', bindTemplateBtn);
+  } else {
+    bindTemplateBtn();
+  }
+})();
+</script>
+
+<script>
+function downloadBlob(filename, blob){
+  var link = document.createElement('a');
+  var url = URL.createObjectURL(blob);
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(function(){
+    URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  }, 50);
+}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const footer = document.querySelector(".app-footer");
+  const clearBtn = document.getElementById("clearBtn"); // kendi buton ID’ni buraya yaz
+
+  // 🔹 Sayfa ilk yüklendiğinde fade-in
+  if (footer) {
+    footer.classList.add("fadein");
+  }
+
+  // 🔹 clearBtn'ye her basıldığında animasyonu yeniden oynat
+  if (clearBtn && footer) {
+    clearBtn.addEventListener("click", () => {
+      footer.classList.remove("fadein");   // önce kaldır
+      void footer.offsetWidth;              // reflow tetikle (animasyonu sıfırla)
+      footer.classList.add("fadein");       // yeniden başlat
+    });
+  }
+});
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Yardımcılar ----------
+  function normTR(s){
+    s = String(s == null ? '' : s);
+    s = s.replace(/\u0049\u0307/g,'\u0130').replace(/\u0069\u0307/g,'i').replace(/\u0307/g,'');
+    return s.trim();
+  }
+
+  function getExpectedHeaders(){
+    var ta = document.getElementById('bom_csv');
+    if(!ta) return [];
+    var text = ta.textContent || '';
+    if(!text) return [];
+    var first = (text.split(/\r?\n/)[0] || '');
+    var comma=(first.match(/,/g)||[]).length, semi=(first.match(/;/g)||[]).length;
+    var delim = semi>comma ? ';' : ',';
+    return first.split(delim).map(function(x){ return String(x==null?'':x).trim(); });
+  }
+
+  function headersStrictEqual(a, b){
+    if(!a || !b) return false;
+    if(a.length !== b.length) return false;
+    for (var i=0;i<a.length;i++){
+      if (normTR(a[i]) !== normTR(b[i])) return false;
+    }
+    return true;
+  }
+
+  function parseCSVLocal(text){
+    if (!text) return [];
+    text = text.replace(/^(?:\s*\uFEFF)?sep\s*=\s*[,;].*?(?:\r?\n)/i, '');
+    var firstLine = (text.split(/\r?\n/)[0] || '');
+    var comma = (firstLine.match(/,/g)||[]).length;
+    var semi  = (firstLine.match(/;/g)||[]).length;
+    var delim = semi > comma ? ';' : ',';
+
+    var out=[], cur='', row=[], i=0, inQ=false;
+    function pushCell(){ row.push(cur); cur=''; }
+    function pushRow(){ out.push(row); row=[]; }
+
+    if(text.charCodeAt(0)===0xFEFF){ text=text.slice(1); }
+
+    while(i<text.length){
+      var c=text[i];
+      if(inQ){
+        if(c=='"'){
+          if(text[i+1]=='"'){ cur+='"'; i++; }
+          else { inQ=false; }
+        } else { cur+=c; }
+      } else {
+        if(c=='"'){ inQ=true; }
+        else if(c==delim){ pushCell(); }
+        else if(c=='\n'){ pushCell(); pushRow(); }
+        else if(c=='\r'){ }
+        else { cur+=c; }
+      }
+      i++;
+    }
+    if(cur!=='' || row.length){ pushCell(); pushRow(); }
+    out = out.filter(function(r){ return r && r.some(function(c){ return String(c||'').trim()!==''; }); });
+    if(out.length){ out[0] = out[0].map(function(h){ return String(h||'').replace(/^\uFEFF/,'').trim(); }); }
+    return out;
+  }
+
+  function csvEscape(cell, delim){
+    var s = String(cell == null ? '' : cell);
+    if (/[\"\r\n]/.test(s) || s.indexOf(delim) !== -1){
+      s = '"' + s.replace(/"/g, '""') + '"';
+    }
+    return s;
+  }
+  function aoaToCSV(rows, delim){
+    delim = delim || ';';
+    return rows.map(function(r){
+      return (r||[]).map(function(c){ return csvEscape(c, delim); }).join(delim);
+    }).join('\n');
+  }
+
+  // HTML içinde <textarea id="bom_csv"> içeriğini değiştirip yeni HTML indir
+  function replaceEmbeddedCSV(newCSV){
+    try{
+      var html = document.documentElement.outerHTML;
+      var updated = html.replace(
+        /(<textarea id="bom_csv"[^>]*>)([\s\S]*?)(<\/textarea>)/,
+        function(_, p1, _old, p3){ return p1 + newCSV + p3; }
+      );
+      var blob = new Blob([updated], { type: "text/html;charset=utf-8" });
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "bom_app_v1_7_5_BOM_UPDATED.html";
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(function(){
+        URL.revokeObjectURL(link.href);
+        document.body.removeChild(link);
+      }, 80);
+    } catch (err){
+      alert("Textarea güncelleme hatası: " + (err && err.message ? err.message : String(err)));
+    }
+  }
+
+  function applyImportedRows(rows){
+    var expected = getExpectedHeaders();
+    if (!expected.length){ alert('Beklenen başlıklar okunamadı.'); return; }
+    if (!rows || !rows.length){ alert('İçe aktarılan dosya boş.'); return; }
+
+    var headerNew = (rows[0] || []).map(normTR);
+    var headerExp = (expected || []).map(normTR);
+
+    if (headerNew.length !== 36 || headerExp.length !== 36){
+      alert('Başlık sayısı 36 olmalı. Gelen: ' + headerNew.length + ', beklenen: ' + headerExp.length + '.');
+      return;
+    }
+    if (!headersStrictEqual(headerNew, headerExp)){
+      var diffs = [];
+      for (var i=0;i<headerExp.length;i++){
+        if (headerNew[i] !== headerExp[i]){
+          diffs.push('Sütun ' + (i+1) + ': beklenen "' + headerExp[i] + '", gelen "' + headerNew[i] + '"');
+        }
+      }
+      alert('Başlıklar uyuşmuyor. Lütfen şablonu kullanın.\n\nFarklar:\n- ' + diffs.join('\n- '));
+      return;
+    }
+
+    var csvText = aoaToCSV(rows, ';');
+
+    // (1) Tarayıcıda kalıcı
+    try{ localStorage.setItem('bom_base_override', csvText); }catch(e){}
+
+    // (2) Dosyayı kalıcı güncelle (yeni HTML indir)
+    if (confirm('Başarılı! Yeni veriyi HTML içine kalıcı olarak gömmek ister misiniz?')){
+      replaceEmbeddedCSV(csvText);
+    }
+
+    var st = document.getElementById('statusFind');
+    if (st) st.textContent = 'Ürün ağacı içe aktarıldı (' + Math.max(rows.length-1, 0) + ' satır).';
+    var res = document.getElementById('result');
+    if (res) res.classList.add('hidden');
+  }
+
+  // ---------- DOM Bağlama ----------
+  var btnImport = document.getElementById('importBomBtn');
+  var fileEl    = document.getElementById('bomImportFile');
+
+  if (!fileEl) { console.warn('bomImportFile yok.'); return; }
+  if (btnImport){
+    // olası eski dinleyicileri temizle
+    var cleanBtn = btnImport.cloneNode(true);
+    btnImport.parentNode.replaceChild(cleanBtn, btnImport);
+    btnImport = cleanBtn;
+
+    // buton her zaman dosya seçtirsin
+    btnImport.addEventListener('click', function(e){
+      e.preventDefault();
+      fileEl.click();
+    });
+    btnImport.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileEl.click(); }
+    });
+  }
+
+  // Tek change handler: XLSX veya CSV içe aktar
+  fileEl.addEventListener('change', function(ev){
+    var f = ev.target.files && ev.target.files[0];
+    if(!f) return;
+
+    var isExcel = /\.xlsx?$/i.test(f.name) || /sheet|excel/i.test(f.type || '');
+    if (isExcel){
+      if (typeof XLSX === 'undefined' || !XLSX.read){ alert('XLSX kütüphanesi yüklenemedi.'); return; }
+      var reader = new FileReader();
+      reader.onload = function(e){
+        try{
+          var data = new Uint8Array(e.target.result);
+          var wb = XLSX.read(data, { type:'array' });
+          var wsName = wb.SheetNames.includes('Şablon') ? 'Şablon' : wb.SheetNames[0];
+          var ws = wb.Sheets[wsName];
+          var rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
+          applyImportedRows(rows);
+        }catch(err){
+          alert('Excel içe aktarma hatası: ' + (err && err.message ? err.message : String(err)));
+        }
+      };
+      reader.onerror = function(e){ alert('Excel içe aktarma hatası: ' + (e && e.message ? e.message : String(e))); };
+      reader.readAsArrayBuffer(f);
+      return;
+    }
+
+    // CSV
+    var r2 = new FileReader();
+    r2.onload = function(e){
+      try{
+        var text = e.target.result || '';
+        var rows = parseCSVLocal(text);
+        applyImportedRows(rows);
+      }catch(err){
+        alert('CSV içe aktarma hatası: ' + (err && err.message ? err.message : String(err)));
+      }
+    };
+    r2.onerror = function(e){ alert('CSV içe aktarma hatası: ' + (e && e.message ? e.message : String(e))); };
+    r2.readAsText(f, 'utf-8');
+  });
+
+})();
+</script>
+
+<script>
+document.getElementById('resetBomOverride')?.addEventListener('click', () => {
+  if (confirm('Yerel olarak kayıtlı BOM verisini silmek ve gömülü veriye dönmek istiyor musunuz?')) {
+    localStorage.removeItem('bom_base_override');
+    alert('Yerel BOM verisi sıfırlandı. Sayfa gömülü veriye döndü.');
+    location.reload();
+  }
+});
+</script>
+
+</body>
+</html>
