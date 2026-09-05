@@ -413,6 +413,7 @@ footer{
 /* Metin+görsel iç içe anlatı bloğu (sections) */
 .detail-image{
   margin: 0 0 30px;
+  max-width: 620px;
 }
 .detail-image img{
   width: 100%;

@@ -18,7 +18,8 @@ const PROJECTS = [
     github: "#",
     video: null,
     related: ["hat-analizi"],
-    lines: ["alfa-sargi", "odawara-sargi", "rotor-hatti", "muhafaza-otomasyon"],
+    lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon", "eksantrik-presler"],
+    // Tahmini — gerçek gözlemlenen süreyle güncelle
     automation: {
       manHours: { tr: "Aylık ~15 saat (tahmini)", en: "~15 hrs/month (estimated)" },
       cycleTimeBeforeMin: 5,
