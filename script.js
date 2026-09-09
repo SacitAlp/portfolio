@@ -110,17 +110,135 @@
     if (closeTimer) clearTimeout(closeTimer);
   }
 
+  // Bir dilimin içeriğini (HTML + tıklama davranışı) üretir — hem daire hem
+  // liste modunda aynı mantık kullanılır, tekrar yazılmaz.
+  function buildItemContent(hub, entry) {
+    if (hub.type === "skills") {
+      const filled = "●".repeat(entry.level);
+      const empty = "○".repeat(5 - entry.level);
+      return {
+        html: `
+          <div class="ri-inner">
+            <div class="ri-title">${entry.name}</div>
+            <div class="ri-dots"><span class="dots-filled">${filled}</span><span class="dots-empty">${empty}</span></div>
+          </div>
+        `,
+        onClick: null
+      };
+    }
+    if (hub.type === "lines") {
+      return {
+        html: `
+          <div class="ri-inner">
+            <div class="ri-tag">${entry.company}</div>
+            <div class="ri-title">${entry.name}</div>
+          </div>
+        `,
+        onClick: () => { window.location.href = "line.html?id=" + encodeURIComponent(entry.id); }
+      };
+    }
+    if (hub.type === "automation") {
+      const rate = autoRate(entry);
+      const rateLabel = rate != null ? "%" + rate : "—";
+      const manHours = entry.automation && entry.automation.manHours ? entry.automation.manHours[currentLang] : "";
+      const metricLabel = currentLang === "tr" ? "zaman kazancı" : "time saved";
+      return {
+        html: `
+          <div class="ri-inner">
+            <div class="ri-tag">${entry.tag[currentLang]}</div>
+            <div class="ri-title">${entry.title[currentLang]}</div>
+            <div class="ri-metric">${rateLabel} ${metricLabel}${manHours ? " · " + manHours : ""}</div>
+          </div>
+        `,
+        onClick: () => { window.location.href = "project.html?id=" + encodeURIComponent(entry.id); }
+      };
+    }
+    const deptLine = entry.department
+      ? `<div class="ri-metric">${entry.department[currentLang]}</div>`
+      : "";
+    return {
+      html: `
+        <div class="ri-inner">
+          <div class="ri-tag">${entry.tag[currentLang]}</div>
+          <div class="ri-title">${entry.title[currentLang]}</div>
+          ${deptLine}
+        </div>
+      `,
+      onClick: () => { window.location.href = "project.html?id=" + encodeURIComponent(entry.id); }
+    };
+  }
+
+  function getHubItems(hub) {
+    return hub.type === "skills"
+      ? SKILLS
+      : hub.type === "lines"
+      ? LINES
+      : hub.items.map((id) => PROJECTS.find((p) => p.id === id)).filter(Boolean);
+  }
+
+  // Dokunmatik cihazlarda: dikey, kaydırılabilir basit liste (daire, dar
+  // ekranlarda çok öğeyle çakışmadan sığmıyor — bu geometrik bir sınır,
+  // sayı ayarlamayla çözülemiyor).
+  function openListMenu(hub) {
+    const items = getHubItems(hub);
+    radialMenu.classList.add("list-mode");
+    radialMenu.style.left = "";
+    radialMenu.style.top = "";
+    radialMenu.innerHTML = `
+      <div class="list-header">
+        <span class="list-num">${hub.num}</span>
+        <span class="list-label">${hub.label[currentLang]}</span>
+      </div>
+    `;
+    radialMenu.dataset.hub = hub.id;
+
+    items.forEach((entry) => {
+      const { html, onClick } = buildItemContent(hub, entry);
+      const item = document.createElement("div");
+      item.className = "radial-item" + (hub.type === "skills" ? " skill-item" : "");
+      item.innerHTML = html;
+      if (onClick) item.addEventListener("click", onClick);
+      radialMenu.appendChild(item);
+    });
+
+    requestAnimationFrame(() => {
+      radialMenu.classList.add("active");
+      radialOverlay.classList.add("active");
+    });
+  }
+
   function openRadialMenu(triggerEl, hub) {
     cancelClose();
+
+    if (isTouch) {
+      openListMenu(hub);
+      return;
+    }
+
     const rect = triggerEl.getBoundingClientRect();
     let cx = rect.left + rect.width / 2;
     let cy = rect.top + rect.height / 2;
 
-    // Ekran kenarına taşmayı engelle
-    const margin = 170;
+    const items = getHubItems(hub);
+    const count = items.length;
+
+    // Öğe genişliği CSS'teki .radial-item ile eşleşmeli (bkz. style.css medya sorgusu)
+    const itemWidth = window.innerWidth <= 860 ? 120 : 150;
+    const itemHalfWidth = itemWidth / 2;
+
+    // Komşu dilimler çakışmasın diye, merkezler-arası uzaklık (kiriş) en az
+    // öğe genişliği kadar olacak şekilde yarıçapı geometriden hesapla.
+    const idealRadius = (itemWidth * 1.5) / (2 * Math.sin(Math.PI / count));
+    // Küçük ekranlarda taşmayı önlemek için ekrana sığacak azami yarıçapla sınırla
+    const maxRadius = Math.min(window.innerWidth, window.innerHeight) / 2 - itemHalfWidth - 16;
+    const radius = Math.min(Math.max(110, idealRadius), Math.max(80, maxRadius));
+
+    // Ekran kenarına taşmayı engelle (artık gerçek yarıçapa göre hesaplanıyor)
+    const margin = radius + itemHalfWidth + 12;
     cx = Math.min(Math.max(cx, margin), window.innerWidth - margin);
     cy = Math.min(Math.max(cy, margin), window.innerHeight - margin);
 
+    radialMenu.classList.remove("list-mode");
     radialMenu.style.left = cx + "px";
     radialMenu.style.top = cy + "px";
     radialMenu.innerHTML = "";
@@ -131,14 +249,6 @@
     center.textContent = hub.num;
     radialMenu.appendChild(center);
 
-    const items = hub.type === "skills"
-      ? SKILLS
-      : hub.type === "lines"
-      ? LINES
-      : hub.items.map((id) => PROJECTS.find((p) => p.id === id)).filter(Boolean);
-
-    const radius = 130 + Math.max(0, items.length - 5) * 12;
-    const count = items.length;
     const startAngle = -90; // yukarıdan başla
     const step = 360 / count;
 
@@ -155,60 +265,13 @@
       line.style.transform = `rotate(${rot}deg)`;
       radialMenu.appendChild(line);
 
+      const { html, onClick } = buildItemContent(hub, entry);
       const item = document.createElement("div");
       item.className = "radial-item" + (hub.type === "skills" ? " skill-item" : "");
       item.style.setProperty("--tx", x + "px");
       item.style.setProperty("--ty", y + "px");
-
-      if (hub.type === "skills") {
-        const filled = "●".repeat(entry.level);
-        const empty = "○".repeat(5 - entry.level);
-        item.innerHTML = `
-          <div class="ri-inner">
-            <div class="ri-title">${entry.name}</div>
-            <div class="ri-dots"><span class="dots-filled">${filled}</span><span class="dots-empty">${empty}</span></div>
-          </div>
-        `;
-      } else if (hub.type === "lines") {
-        item.innerHTML = `
-          <div class="ri-inner">
-            <div class="ri-tag">${entry.company}</div>
-            <div class="ri-title">${entry.name}</div>
-          </div>
-        `;
-        item.addEventListener("click", () => {
-          window.location.href = "line.html?id=" + encodeURIComponent(entry.id);
-        });
-      } else if (hub.type === "automation") {
-        const rate = autoRate(entry);
-        const rateLabel = rate != null ? "%" + rate : "—";
-        const manHours = entry.automation && entry.automation.manHours ? entry.automation.manHours[currentLang] : "";
-        const metricLabel = currentLang === "tr" ? "zaman kazancı" : "time saved";
-        item.innerHTML = `
-          <div class="ri-inner">
-            <div class="ri-tag">${entry.tag[currentLang]}</div>
-            <div class="ri-title">${entry.title[currentLang]}</div>
-            <div class="ri-metric">${rateLabel} ${metricLabel}${manHours ? " · " + manHours : ""}</div>
-          </div>
-        `;
-        item.addEventListener("click", () => {
-          window.location.href = "project.html?id=" + encodeURIComponent(entry.id);
-        });
-      } else {
-        const deptLine = entry.department
-          ? `<div class="ri-metric">${entry.department[currentLang]}</div>`
-          : "";
-        item.innerHTML = `
-          <div class="ri-inner">
-            <div class="ri-tag">${entry.tag[currentLang]}</div>
-            <div class="ri-title">${entry.title[currentLang]}</div>
-            ${deptLine}
-          </div>
-        `;
-        item.addEventListener("click", () => {
-          window.location.href = "project.html?id=" + encodeURIComponent(entry.id);
-        });
-      }
+      item.innerHTML = html;
+      if (onClick) item.addEventListener("click", onClick);
 
       item.addEventListener("mouseenter", cancelClose);
       item.addEventListener("mouseleave", scheduleClose);

@@ -14,14 +14,14 @@ const PROJECTS = [
       tr: "BM veya Stator koduna göre anlık ürün ağacı arama, ortak parça tespiti ve saha kadrosunu tek ekrandan yönetme.",
       en: "Instant BOM lookup by assembly or stator code, shared-part detection, and single-screen roster management."
     },
-    stack: ["HTML5", "CSS3", "JavaScript (Vanilla)", "SheetJS (xlsx.js)", "localStorage", "Python (pandas, matplotlib) — offline analiz eki"],
+    stack: ["HTML5", "CSS3", "JavaScript (Vanilla)", "SheetJS (xlsx.js)", "localStorage", "Python (pandas, matplotlib)"],
     github: "#",
     video: null,
     related: ["hat-analizi"],
     lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon", "eksantrik-presler"],
     // Tahmini — gerçek gözlemlenen süreyle güncelle
     automation: {
-      manHours: { tr: "Aylık ~15 saat (tahmini)", en: "~15 hrs/month (estimated)" },
+      manHours: { tr: "Aylık ~25 saat (kullanıcı sayısıyla orantılı)", en: "~25 hrs/month (proportional to the number of users)" },
       cycleTimeBeforeMin: 5,
       cycleTimeAfterMin: 0.5
     },
@@ -87,9 +87,9 @@ const PROJECTS = [
     related: ["bom-app"],
     lines: ["alfa-sargi"],
     automation: {
-      manHours: { tr: "Vardiya raporu başına ~35 dk (tahmini)", en: "~35 min/shift report (estimated)" },
-      cycleTimeBeforeMin: 40,
-      cycleTimeAfterMin: 5
+      manHours: { tr: "Vardiya raporu başına ~45 dk", en: "~45 min/shift report" },
+      cycleTimeBeforeMin: 50,
+      cycleTimeAfterMin: 30
     },
     sections: [
       { type: "text", content: {
@@ -139,7 +139,7 @@ const PROJECTS = [
     lines: [],
     // ÖRNEK veri — gerçek rakamlarla değiştir
     automation: {
-      manHours: { tr: "Aylık ~25 saat", en: "~25 hrs/month" },
+      manHours: { tr: "Aylık ~25 saat (tahmini)", en: "~25 hrs/month (estimated)" },
       cycleTimeBeforeMin: 40,
       cycleTimeAfterMin: 10
     }
@@ -165,7 +165,7 @@ const PROJECTS = [
     lines: [], // belirli bir hatta değil, ekip/eğitim bazlı çalışıyor
     // ÖRNEK veri — gerçek rakamlarla değiştir
     automation: {
-      manHours: { tr: "Aylık ~10 saat", en: "~10 hrs/month" },
+      manHours: { tr: "Aylık ~10 saat (tahmini)", en: "~10 hrs/month (estimated)" },
       cycleTimeBeforeMin: 20,
       cycleTimeAfterMin: 5
     }
@@ -190,7 +190,7 @@ const PROJECTS = [
     lines: ["odawara-sargi", "alfa-sargi", "rotor-hatti", "muhafaza-otomasyon", "eksantrik-presler"],
     // ÖRNEK veri — gerçek rakamlarla değiştir
     automation: {
-      manHours: { tr: "Aylık ~15 saat", en: "~15 hrs/month" },
+      manHours: { tr: "Aylık ~15 saat (tahmini)", en: "~15 hrs/month (estimated)" },
       cycleTimeBeforeMin: 25,
       cycleTimeAfterMin: 6
     }
