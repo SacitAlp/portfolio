@@ -61,25 +61,25 @@ const PROJECTS = [
       { type: "text", content: {
         tr: "Alfa Sargı hattındaki 8-10 istasyonun her biri kendi otomasyon sisteminden ayrı bir Excel dökümü üretiyor. Mevcut VBA aracı, klasik OEE formülünü (Kalite × Performans × Kullanılabilirlik) doğru şekilde uygulayarak vardiya bazlı üretim/hurda/duruş takibini otomatikleştiriyor.",
         en: "Each of the 8-10 stations on the Alfa Winding line produces its own Excel export from its automation system. The existing VBA tool correctly implements the classic OEE formula (Quality × Performance × Availability), automating shift-level production/scrap/downtime tracking." } },
-      { type: "image", src: "assets/projects/hat-analizi/shift-oee-trend.png", caption: {
+      { type: "image", src: "assets/projects/hat-analizi/shift_oee_trend.png", caption: {
         tr: "Vardiya bazlı üretim/hedef sapması ve OEE trendi (temsili veri)",
         en: "Shift-level production vs target and OEE trend (representative data)" } },
       { type: "text", content: {
         tr: "İstasyon dosyalarının hepsinde ortak bir alan olduğu fark edildi: her ünitenin taşıdığı benzersiz seri numarası. Bu, dosyaların aslında ilişkisel bir veri seti olduğu ama hiç bu şekilde kullanılmadığı anlamına geliyordu. Bunun üzerine, istasyonları seri numarasından birleştiren bağımsız bir Python analiz katmanı (39 birim testle doğrulanmış) geliştirildi.",
         en: "All station files were found to share a common field: each unit's unique serial number. This meant the files formed a relational dataset that had never been used as one. A standalone Python analytics layer (verified with 39 unit tests) was built to join stations on that serial number." } },
-      { type: "image", src: "assets/projects/hat-analizi/fpy-by-station.png", caption: {
+      { type: "image", src: "assets/projects/hat-analizi/fpy_by_station.png", caption: {
         tr: "İstasyon bazlı ilk-geçiş verimi (FPY) — temsili veri",
         en: "First-pass yield (FPY) by station — representative data" } },
-      { type: "image", src: "assets/projects/hat-analizi/ng-pareto-all-stations.png", caption: {
+      { type: "image", src: "assets/projects/hat-analizi/ng_pareto_all_stations.png", caption: {
         tr: "İstasyon bazlı en sık NG nedenleri — Pareto analizi (temsili veri)",
         en: "Most frequent NG reasons per station — Pareto analysis (representative data)" } },
-      { type: "image", src: "assets/projects/hat-analizi/unit-genealogy-example.png", caption: {
+      { type: "image", src: "assets/projects/hat-analizi/unit_genealogy_example.png", caption: {
         tr: "Tek bir ürünün hat boyunca istasyon istasyon izlenmesi (temsili veri)",
         en: "Station-by-station trace of a single product across the line (representative data)" } },
       { type: "text", content: {
         tr: "Bu istasyon-bazlı görünürlük, tarih aralığına göre hata oranı trendini de mümkün kıldı — belirli bir istasyonun zaman içinde kötüleşip kötüleşmediği artık tek bakışta görülebiliyor.",
         en: "This station-level visibility also enabled a defect rate trend over any date range — whether a specific station is degrading over time is now visible at a glance." } },
-      { type: "image", src: "assets/projects/hat-analizi/defect-rate-trend.png", caption: {
+      { type: "image", src: "assets/projects/hat-analizi/defect_rate_trend.png", caption: {
         tr: "Seçilen tarih aralığında istasyon bazlı hata oranı trendi (temsili veri)",
         en: "Station-level defect rate trend over a selected date range (representative data)" } }
     ]
