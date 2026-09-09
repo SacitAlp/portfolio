@@ -41,27 +41,48 @@ const PROJECTS = [
   {
     id: "hat-analizi",
     category: "is",
-    tag: { tr: "Excel · Dashboard", en: "Excel · Dashboard" },
-    title: { tr: "Hat Üretim Veri Analizi", en: "Production Line Data Analysis" },
+    tag: { tr: "Excel · VBA · Üretim Analizi", en: "Excel · VBA · Production Analytics" },
+    title: { tr: "Alfa Sargı Hattı Üretim Veri Analizi", en: "Alfa Winding Line Production Data Analysis" },
     desc: {
-      tr: "Hat verilerini toplayıp analiz eden, formül zincirleriyle otomatik güncellenen dashboard.",
-      en: "A dashboard that collects and analyzes line data, auto-updating through chained formulas."
+      tr: "Alfa Sargı hattındaki istasyonların vardiya bazlı üretim/hurda verisini OEE'ye dönüştüren Excel aracı; istasyonlar-arası izlenebilirlik ve zaman serisi analizi için Python katmanıyla genişletildi.",
+      en: "An Excel tool that turns shift-level production/scrap data from the Alfa Winding line stations into OEE metrics, extended with a Python analytics layer for cross-station traceability and time-series analysis."
     },
-    long: {
-      tr: "Günlük hat verisini manuel toplama sürecini ortadan kaldırıp, LAMBDA/LET formül zincirleriyle otomatik güncellenen bir dashboard'a dönüştürdüğüm çalışma. Grafikler ve özet tablolar, ham veri girildiği anda kendini yeniliyor.",
-      en: "Replaced manual daily line-data collection with a dashboard that auto-updates through chained LAMBDA/LET formulas. Charts and summary tables refresh the moment raw data is entered."
-    },
-    stack: ["Excel", "LAMBDA/LET", "Pivot"],
+    stack: ["Excel", "VBA", "Python (pandas, matplotlib)", "pytest"],
     github: "#",
     video: null,
-    related: ["uretim-programi", "deneme-takip"],
+    related: ["bom-app"],
     lines: ["alfa-sargi"],
-    // ÖRNEK veri — gerçek rakamlarla değiştir
     automation: {
-      manHours: { tr: "Aylık ~35 saat", en: "~35 hrs/month" },
-      cycleTimeBeforeMin: 60,
-      cycleTimeAfterMin: 8
-    }
+      manHours: { tr: "Vardiya raporu başına ~35 dk (tahmini)", en: "~35 min/shift report (estimated)" },
+      cycleTimeBeforeMin: 40,
+      cycleTimeAfterMin: 5
+    },
+    sections: [
+      { type: "text", content: {
+        tr: "Alfa Sargı hattındaki 8-10 istasyonun her biri kendi otomasyon sisteminden ayrı bir Excel dökümü üretiyor. Mevcut VBA aracı, klasik OEE formülünü (Kalite × Performans × Kullanılabilirlik) doğru şekilde uygulayarak vardiya bazlı üretim/hurda/duruş takibini otomatikleştiriyor.",
+        en: "Each of the 8-10 stations on the Alfa Winding line produces its own Excel export from its automation system. The existing VBA tool correctly implements the classic OEE formula (Quality × Performance × Availability), automating shift-level production/scrap/downtime tracking." } },
+      { type: "image", src: "assets/projects/hat-analizi/shift-oee-trend.png", caption: {
+        tr: "Vardiya bazlı üretim/hedef sapması ve OEE trendi (temsili veri)",
+        en: "Shift-level production vs target and OEE trend (representative data)" } },
+      { type: "text", content: {
+        tr: "İstasyon dosyalarının hepsinde ortak bir alan olduğu fark edildi: her ünitenin taşıdığı benzersiz seri numarası. Bu, dosyaların aslında ilişkisel bir veri seti olduğu ama hiç bu şekilde kullanılmadığı anlamına geliyordu. Bunun üzerine, istasyonları seri numarasından birleştiren bağımsız bir Python analiz katmanı (39 birim testle doğrulanmış) geliştirildi.",
+        en: "All station files were found to share a common field: each unit's unique serial number. This meant the files formed a relational dataset that had never been used as one. A standalone Python analytics layer (verified with 39 unit tests) was built to join stations on that serial number." } },
+      { type: "image", src: "assets/projects/hat-analizi/fpy-by-station.png", caption: {
+        tr: "İstasyon bazlı ilk-geçiş verimi (FPY) — temsili veri",
+        en: "First-pass yield (FPY) by station — representative data" } },
+      { type: "image", src: "assets/projects/hat-analizi/ng-pareto-all-stations.png", caption: {
+        tr: "İstasyon bazlı en sık NG nedenleri — Pareto analizi (temsili veri)",
+        en: "Most frequent NG reasons per station — Pareto analysis (representative data)" } },
+      { type: "image", src: "assets/projects/hat-analizi/unit-genealogy-example.png", caption: {
+        tr: "Tek bir ürünün hat boyunca istasyon istasyon izlenmesi (temsili veri)",
+        en: "Station-by-station trace of a single product across the line (representative data)" } },
+      { type: "text", content: {
+        tr: "Bu istasyon-bazlı görünürlük, tarih aralığına göre hata oranı trendini de mümkün kıldı — belirli bir istasyonun zaman içinde kötüleşip kötüleşmediği artık tek bakışta görülebiliyor.",
+        en: "This station-level visibility also enabled a defect rate trend over any date range — whether a specific station is degrading over time is now visible at a glance." } },
+      { type: "image", src: "assets/projects/hat-analizi/defect-rate-trend.png", caption: {
+        tr: "Seçilen tarih aralığında istasyon bazlı hata oranı trendi (temsili veri)",
+        en: "Station-level defect rate trend over a selected date range (representative data)" } }
+    ]
   },
   {
     id: "uretim-programi",
