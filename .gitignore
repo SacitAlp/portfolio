@@ -1,0 +1,44 @@
+# ---------------------------------------------------------
+# İşletim sistemi / editör çöp dosyaları
+# ---------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.log
+
+# ---------------------------------------------------------
+# GÜVENLİ ALAN: Bu klasörlere koyduğun hiçbir şey asla
+# Git'e eklenmez, sadece bilgisayarında kalır.
+# Hassas notlar, ham şirket dosyaları, taslaklar buraya.
+# ---------------------------------------------------------
+private/
+raw/
+confidential/
+drafts/
+
+# ---------------------------------------------------------
+# Ham Office dosyaları varsayılan olarak asla eklenmesin
+# (site için ekran görüntüsü / PDF / HTML kullanıyoruz).
+# Gerçekten birini bilerek paylaşmak istersen:
+#   git add -f dosya_adi.xlsm
+# komutuyla bu kuralı o dosya için bilinçli olarak aşabilirsin.
+# ---------------------------------------------------------
+*.xlsm
+*.xlsx
+*.xls
+
+# ---------------------------------------------------------
+# Çalışma/referans dosyaları — siteye hiç girmiyor, sadece
+# proje işleme sürecinde (chat'ler arası) kullanılıyor.
+# ---------------------------------------------------------
+PROJE-SEMA-REFERANSI.md
+case-study-*.md
+preview/
+
+# ---------------------------------------------------------
+# Python analiz dosyaları asla repoya girmesin — sadece
+# ürettiği PNG/görsel çıktılar assets/ altına elle kopyalanıyor.
+# Gerçekten birini bilerek paylaşmak istersen git add -f kullan.
+# ---------------------------------------------------------
+*.py
+__pycache__/
+tests/
