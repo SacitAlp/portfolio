@@ -26,16 +26,50 @@ const PROJECTS = [
       cycleTimeAfterMin: 0.5
     },
     sections: [
-      { type: "text", content: { tr: "Sahada BM veya Stator koduna göre ürün ağacı bilgisine ulaşmak eskiden dağınık Excel/kağıt listeler arasında dakikalar sürüyordu.  Uygulamayı canlı denemek için <a href='assets/projects/bom-app/demo/bom_app_demo_anonimlestirilmis.html' target='_blank' rel='noopener' style='text-decoration:underline;'><strong>buraya tıklayın</strong></a>.", en: "Looking up BOM information by assembly or stator code on the shop floor used to take minutes of flipping through scattered Excel sheets or paper lists.  Try the live app <a href='assets/projects/bom-app/demo/bom_app_demo_anonimlestirilmis.html' target='_blank' rel='noopener' style='text-decoration:underline;'><strong>here</strong></a>." } },
-      { type: "image", src: "assets/projects/bom-app/demo-arama-ekrani.png", caption: { tr: "Anlık BOM arama ve gruplu sonuç kartları", en: "Instant BOM lookup with grouped result cards" } },
-      { type: "text", content: { tr: "Bir adım öteye geçip 'bu stator kodu başka hangi modellerde kullanılıyor' sorusuna da tek dokunuşla cevap verildi.", en: "Taking it a step further, a single tap now answers 'which other models use this stator code'." } },
-      { type: "image", src: "assets/projects/bom-app/demo-stator-ortak-kullanim.png", caption: { tr: "Stator kodu ortak kullanım ters-araması", en: "Reverse lookup for shared stator codes" } },
-      { type: "text", content: { tr: "Aynı uygulamaya, ayrı bir Excel dosyasına bakma ihtiyacını ortadan kaldıran, filtrelenebilir ve düzenlenebilir bir kadro (vardiya) yönetim modülü de eklendi.", en: "The same app also includes a filterable, editable roster module that removes the need to check a separate Excel file." } },
-      { type: "image", src: "assets/projects/bom-app/demo-kadro-ekrani.png", caption: { tr: "Birim/cinsiyet/sözleşme türüne göre filtrelenebilen kadro ekranı", en: "Roster screen, filterable by department, gender, and contract type" } },
-      { type: "text", content: { tr: "Aynı veri yapısını bu kez toplu bakış açısıyla incelemek için Python (pandas) ile offline bir analiz katmanı da eklendi — bu, sitede çalışmaz, yalnızca rapor/görsel üretir.", en: "The same data structure was also analyzed in bulk using an offline Python (pandas) layer — this doesn't run on the site, it only generates reports/visuals." } },
-      { type: "image", src: "assets/projects/bom-app/parca_ortakligi.png", caption: { tr: "En çok paylaşılan parça kodları — stok konsolidasyonu fırsatları", en: "Most-shared component codes — stock consolidation opportunities" } },
-      { type: "image", src: "assets/projects/bom-app/veri_tamligi.png", caption: { tr: "Alan bazlı veri tamlığı raporu", en: "Field-level data completeness report" } },
-      { type: "text", content: { tr: "Sonuç: arama süresi dakikalardan saniyelere indi, ortak parça görünürlüğü stok tartışmalarına somut bir başlangıç noktası sağladı.", en: "Result: lookup time dropped from minutes to seconds, and shared-part visibility gave stock discussions a concrete starting point." } }
+      { type: "text", content: {
+        tr: "Sahada veya toplantılarda BM ya da Stator koduna göre ürün ağacı bilgisine ulaşmak, eskiden dağınık Excel/kağıt listeler ile SAP arasında geçen dakikalar sürüyordu. Bunun üzerine, şablon yapısına uygun ürün ağaçlarının HTML tabanlı bir arayüzden kolayca içe aktarılabildiği bir çözüm geliştirildi.",
+        en: "Looking up BOM information by assembly or stator code, whether on the shop floor or in meetings, used to take minutes spent switching between scattered Excel/paper lists and SAP. To solve this, a solution was built where template-based BOM structures can be easily imported through an HTML interface."
+      } },
+      { type: "text", content: {
+        tr: "Uygulamayı canlı olarak denemek için <a href='assets/projects/bom-app/demo/bom_app_demo_anonimlestirilmis.html' target='_blank' rel='noopener' style='text-decoration:underline;'><strong>buraya tıklayın</strong></a>.",
+        en: "To try the app live, <a href='assets/projects/bom-app/demo/bom_app_demo_anonimlestirilmis.html' target='_blank' rel='noopener' style='text-decoration:underline;'><strong>click here</strong></a>."
+      } },
+      { type: "image", src: "assets/projects/bom-app/demo-arama-ekrani.png", caption: {
+        tr: "BOM arama ve hat bazlı gruplu sonuç kartları",
+        en: "Instant BOM lookup with line-based grouped result cards"
+      } },
+      { type: "text", content: {
+        tr: "Kullanım sırasında alınan geri bildirimlerle bir adım daha ileri gidilerek, 'bu stator kodu başka hangi modellerde kullanılıyor' sorusuna da tek dokunuşla cevap verildi.",
+        en: "Based on feedback gathered during use, the tool was taken a step further to answer, with a single tap, the question of which other models share a given stator code."
+      } },
+      { type: "image", src: "assets/projects/bom-app/demo-stator-ortak-kullanim.png", caption: {
+        tr: "Stator kodu ortak kullanım ters-araması",
+        en: "Reverse lookup for shared stator codes"
+      } },
+      { type: "text", content: {
+        tr: "Aynı uygulamaya, ayrı bir Excel dosyasına bakma ihtiyacını ortadan kaldıran, filtrelenebilir ve düzenlenebilir bir kadro (vardiya) yönetim modülü de eklendi. Bu modül, gerektiğinde personel eğitimlerinin takibiyle birleştirilerek yetenek matrisi gibi uygulamalar için de büyük kolaylık sağlayacaktır.",
+        en: "The same app also includes a filterable, editable roster (shift) management module that removes the need to check a separate Excel file. When needed, this module can be combined with employee training records to support use cases like skills matrices as well."
+      } },
+      { type: "image", src: "assets/projects/bom-app/demo-kadro-ekrani.png", caption: {
+        tr: "Birim/cinsiyet/sözleşme türüne göre filtrelenebilen kadro ekranı",
+        en: "Roster screen, filterable by department, gender, and contract type"
+      } },
+      { type: "text", content: {
+        tr: "Aynı veri yapısını bu kez toplu bir bakış açısıyla incelemek ve elimizdeki verinin doluluk oranını görmek için Python (pandas) ile offline bir analiz katmanı da eklendi. Buradan hareketle stok takibi, model dönüşleri, malzeme planlaması ve benzeri ihtiyaçlar için çalışmalar ilerletilebilir — bu kısma sitede yer verilmemiştir, ancak iletişime geçerek detaylı bilgi alabilirsiniz.",
+        en: "An offline analysis layer built with Python (pandas) was also added to examine the same data structure from a bulk perspective and check how complete our data actually is. This can be extended further for stock tracking, model transitions, material planning, and similar needs — it isn't available on the site, but feel free to reach out for more details."
+      } },
+      { type: "image", src: "assets/projects/bom-app/parca_ortakligi.png", caption: {
+        tr: "En çok paylaşılan stator kodları — stok konsolidasyonu fırsatları",
+        en: "Most-shared stator codes — stock consolidation opportunities"
+      } },
+      { type: "image", src: "assets/projects/bom-app/veri_tamligi.png", caption: {
+        tr: "Alan bazlı veri tamlığı raporu",
+        en: "Field-level data completeness report"
+      } },
+      { type: "text", content: {
+        tr: "Sonuç: arama süresi dakikalardan saniyelere indi, ürün ağacı bilgisine her yerden erişilebilen, daha geniş bir kullanıcı profiline hitap eden bir sisteme geçildi. Kadro tarafında personel bilgisi ve yetkinlikler artık tek bir ekrandan takip edilebiliyor.",
+        en: "Result: lookup time dropped from minutes to seconds, and the team moved to a system reachable from anywhere, serving a much broader set of users. On the roster side, personnel information and competencies can now be tracked from a single screen."
+      } }
     ]
   },
   {
@@ -59,14 +93,14 @@ const PROJECTS = [
     },
     sections: [
       { type: "text", content: {
-        tr: "Alfa Sargı hattındaki 8-10 istasyonun her biri kendi otomasyon sisteminden ayrı bir Excel dökümü üretiyor. Mevcut VBA aracı, klasik OEE formülünü (Kalite × Performans × Kullanılabilirlik) doğru şekilde uygulayarak vardiya bazlı üretim/hurda/duruş takibini otomatikleştiriyor.",
-        en: "Each of the 8-10 stations on the Alfa Winding line produces its own Excel export from its automation system. The existing VBA tool correctly implements the classic OEE formula (Quality × Performance × Availability), automating shift-level production/scrap/downtime tracking." } },
+        tr: "Alfa Sargı hattındaki 8-10 istasyonun her biri kendi otomasyon sisteminden ayrı bir Excel dökümü üretiyor. Mevcut VBA aracı, klasik OEE formülünü (Kalite × Performans × Kullanılabilirlik) uygulayarak vardiya bazlı üretim/hurda/duruş takibini otomatikleştiriyor.",
+        en: "Each of the 8-10 stations on the Alfa Winding line generates its own Excel export from its own automation system. The existing VBA tool automates shift-level production, scrap, and downtime tracking by applying the classic OEE formula (Quality × Performance × Availability)." } },
       { type: "image", src: "assets/projects/hat-analizi/shift_oee_trend.png", caption: {
         tr: "Vardiya bazlı üretim/hedef sapması ve OEE trendi (temsili veri)",
         en: "Shift-level production vs target and OEE trend (representative data)" } },
       { type: "text", content: {
-        tr: "İstasyon dosyalarının hepsinde ortak bir alan olduğu fark edildi: her ünitenin taşıdığı benzersiz seri numarası. Bu, dosyaların aslında ilişkisel bir veri seti olduğu ama hiç bu şekilde kullanılmadığı anlamına geliyordu. Bunun üzerine, istasyonları seri numarasından birleştiren bağımsız bir Python analiz katmanı (39 birim testle doğrulanmış) geliştirildi.",
-        en: "All station files were found to share a common field: each unit's unique serial number. This meant the files formed a relational dataset that had never been used as one. A standalone Python analytics layer (verified with 39 unit tests) was built to join stations on that serial number." } },
+        tr: "İstasyon dosyalarının hepsinde ortak bir alan olan ve her ürünün taşıdığı benzersiz seri numarası, bu dosyaların aslında ilişkisel bir veri seti olduğunu, ancak Excel/VBA kısıtları nedeniyle bu ilişkinin yeterince derinlemesine incelenemediğini gösteriyordu. Bunun üzerine, istasyonları seri numarasından birleştiren bağımsız bir Python analiz katmanı (39 birim testle doğrulanmış) geliştirildi.",
+        en: "The unique serial number carried by every product — a field common to all station files — revealed that these files actually formed a relational dataset, one that Excel/VBA's constraints had kept from being explored in enough depth. A standalone Python analytics layer (verified with 39 unit tests) was built to join the stations on that serial number." } },
       { type: "image", src: "assets/projects/hat-analizi/fpy_by_station.png", caption: {
         tr: "İstasyon bazlı ilk-geçiş verimi (FPY) — temsili veri",
         en: "First-pass yield (FPY) by station — representative data" } },
@@ -77,8 +111,8 @@ const PROJECTS = [
         tr: "Tek bir ürünün hat boyunca istasyon istasyon izlenmesi (temsili veri)",
         en: "Station-by-station trace of a single product across the line (representative data)" } },
       { type: "text", content: {
-        tr: "Bu istasyon-bazlı görünürlük, tarih aralığına göre hata oranı trendini de mümkün kıldı — belirli bir istasyonun zaman içinde kötüleşip kötüleşmediği artık tek bakışta görülebiliyor.",
-        en: "This station-level visibility also enabled a defect rate trend over any date range — whether a specific station is degrading over time is now visible at a glance." } },
+        tr: "Bu istasyon-bazlı görünürlük, tarih aralığına göre hata oranı trendini de mümkün kıldı — belirli bir istasyonun zaman içinde kötüleşip kötüleşmediği artık tek bakışta görülebiliyor. Hatta vardiyalar arası kıyaslama da elimizdeki veriyle kolaylıkla yapılabiliyor.",
+        en: "This station-level visibility also made it possible to track the defect-rate trend over any date range — whether a given station is degrading over time is now visible at a glance. Shift-to-shift comparisons, too, can now be made easily from the same data." } },
       { type: "image", src: "assets/projects/hat-analizi/defect_rate_trend.png", caption: {
         tr: "Seçilen tarih aralığında istasyon bazlı hata oranı trendi (temsili veri)",
         en: "Station-level defect rate trend over a selected date range (representative data)" } }

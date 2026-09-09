@@ -31,7 +31,7 @@
       });
     }
     if (!blocks.length) {
-      blocks.push(`<div class="detail-media">${t.detail_soon}</div>`);
+      return "";
     }
     return blocks.join("");
   }
@@ -77,7 +77,7 @@
 
     const githubBtn = project.github && project.github !== "#"
       ? `<a href="${project.github}" class="btn" target="_blank" rel="noopener">${t.detail_github}</a>`
-      : `<span class="btn ghost" style="opacity:0.5; cursor:default;">${t.detail_soon}</span>`;
+      : "";
 
     const videoBtn = project.video
       ? `<a href="${project.video}" class="btn ghost" target="_blank" rel="noopener">${t.detail_video}</a>`
@@ -85,6 +85,9 @@
 
     const mediaBlock = buildMediaBlock(project, t);
     const bodyHtml = buildBody(project);
+    const ctasHtml = (githubBtn || videoBtn)
+      ? `<div class="detail-ctas">${githubBtn}${videoBtn}</div>`
+      : "";
 
     detailContent.innerHTML = `
       <div class="detail-tag">${project.tag[currentLang]}</div>
@@ -96,10 +99,7 @@
 
       ${mediaBlock}
 
-      <div class="detail-ctas">
-        ${githubBtn}
-        ${videoBtn}
-      </div>
+      ${ctasHtml}
     `;
 
     const related = relatedFor(project);
