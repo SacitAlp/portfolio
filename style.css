@@ -188,6 +188,17 @@ p.lead{
 }
 .radial-menu.active{ pointer-events:auto; }
 
+/* Dilimler arası boşluklarda fareyi yakalayan görünmez daire — bu olmadan
+   fare bir kutudan çıkıp boşluğa girince menü anında kapanıyordu. */
+.radial-hover-zone{
+  position: fixed;
+  border-radius: 50%;
+  z-index: 95; /* overlay(90) < bu(95) < radial-menu/liste(100) */
+  pointer-events: none;
+  background: transparent;
+}
+.radial-hover-zone.active{ pointer-events: auto; }
+
 /* Dokunmatik cihazlarda: dikey, kaydırılabilir liste (daire dar ekranda
    çok öğeyle sığmıyor — bkz. script.js openListMenu) */
 .radial-menu.list-mode{
@@ -235,11 +246,23 @@ p.lead{
 .radial-menu.list-mode .radial-item{
   position: relative;
   width: 100%;
-  transform: none;
-  opacity: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  transform: none !important;
+  opacity: 1 !important;
+  left: auto;
 }
 .radial-menu.list-mode .radial-item .ri-inner{
   padding: 14px;
+}
+.radial-menu.list-mode .list-header,
+.radial-menu.list-mode .ri-title,
+.radial-menu.list-mode .ri-tag,
+.radial-menu.list-mode .ri-metric,
+.radial-menu.list-mode .list-label{
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .radial-center{

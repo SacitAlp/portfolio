@@ -8,6 +8,7 @@
   const projectGrid = document.getElementById("projectGrid");
   const radialMenu = document.getElementById("radialMenu");
   const radialOverlay = document.getElementById("radialOverlay");
+  const radialHoverZone = document.getElementById("radialHoverZone");
   const langBtn = document.getElementById("langToggle");
 
   // Zaman kazancı (%) hesabı: (önce - sonra) / önce * 100
@@ -244,6 +245,16 @@
     radialMenu.innerHTML = "";
     radialMenu.dataset.hub = hub.id;
 
+    // Dilimlerin dış sınırını kapsayan görünmez algılama dairesi — bunun
+    // içindeyken fare hangi boşlukta olursa olsun menü açık kalır.
+    const zoneDiameter = 2 * (radius + itemHalfWidth + 20);
+    radialHoverZone.style.width = zoneDiameter + "px";
+    radialHoverZone.style.height = zoneDiameter + "px";
+    radialHoverZone.style.left = cx + "px";
+    radialHoverZone.style.top = cy + "px";
+    radialHoverZone.style.transform = "translate(-50%, -50%)";
+    radialHoverZone.classList.add("active");
+
     const center = document.createElement("div");
     center.className = "radial-center";
     center.textContent = hub.num;
@@ -290,9 +301,13 @@
   function closeRadialMenu() {
     radialMenu.classList.remove("active");
     radialOverlay.classList.remove("active");
+    radialHoverZone.classList.remove("active");
   }
 
   radialOverlay.addEventListener("click", closeRadialMenu);
+  radialHoverZone.addEventListener("mouseenter", cancelClose);
+  radialHoverZone.addEventListener("mouseleave", scheduleClose);
+  radialHoverZone.addEventListener("click", closeRadialMenu);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeRadialMenu();
   });
